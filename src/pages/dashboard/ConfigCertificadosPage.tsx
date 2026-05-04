@@ -1,5 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Settings, ToggleLeft, ToggleRight, Image as ImageIcon, PenLine } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { 
+  Plus, Edit2, Trash2, Settings, ToggleLeft, ToggleRight, Image as ImageIcon, 
+  PenLine, Eye, CheckCircle, BookOpen, Upload, X, Shield, FileText, Users
+} from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import ImageUpload from '@/components/ui/ImageUpload';
 import { ConfiguracionesCertificadoService, ConfiguracionCertificado, CreateConfiguracionCertificadoDto } from '@/lib/services/configuraciones-certificado.service';
@@ -9,25 +12,203 @@ import { LogosService, Logo, CreateLogoDto } from '@/lib/services/logos.service'
 
 type Tab = 'configuraciones' | 'logos' | 'firmas';
 
-/* ─── Configuraciones ─── */
 const emptyConfig: CreateConfiguracionCertificadoDto = { programaId: 0, plantillaUrl: '', activo: true, logos: [], firmas: [] };
-
-/* ─── Logos ─── */
 const emptyLogo: CreateLogoDto = { nombre: '', imagenLogo: '', activo: true };
-
-/* ─── Firmas ─── */
 const emptyFirma: CreateFirmaDto = { nombreAutoridad: '', cargo: '', imagenFirma: '', activo: true };
+
+// COMPONENTE COMBOBOX PARA PROGRAMAS
+function ProgramaCombobox({ options, value, onChange, placeholder = "Buscar programa..." }: { 
+  options: Programa[]; 
+  value: number; 
+  onChange: (id: number) => void; 
+  placeholder?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const selectedPrograma = options.find(o => o.id === value);
+
+  const filteredOptions = useMemo(() => {
+    if (!searchTerm.trim()) return options;
+    const term = searchTerm.toLowerCase();
+    return options.filter(opt => opt.nombre.toLowerCase().includes(term));
+  }, [options, searchTerm]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+        setSearchTerm('');
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSelect = (programa: Programa) => {
+    onChange(programa.id);
+    setIsOpen(false);
+    setSearchTerm('');
+    setHighlightedIndex(-1);
+  };
+
+  return (
+    <div ref={containerRef} className="relative">
+      <div className={`relative flex items-center border rounded-xl transition-all ${
+        isOpen ? 'border-[#F7941D] ring-2 ring-[#F7941D]/20' : 'border-gray-200'
+      }`}>
+        <BookOpen className="absolute left-3 w-4 h-4 text-gray-400" />
+        <input
+          type="text"
+          value={isOpen ? searchTerm : (selectedPrograma?.nombre || '')}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setIsOpen(true);
+          }}
+          onFocus={() => {
+            setIsOpen(true);
+            setSearchTerm('');
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              setHighlightedIndex(prev => Math.min(prev + 1, filteredOptions.length - 1));
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              setHighlightedIndex(prev => Math.max(prev - 1, -1));
+            } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+              e.preventDefault();
+              handleSelect(filteredOptions[highlightedIndex]);
+            } else if (e.key === 'Escape') {
+              setIsOpen(false);
+              setSearchTerm('');
+            }
+          }}
+          placeholder={placeholder}
+          className="w-full pl-9 pr-3 py-2.5 bg-transparent rounded-xl text-sm outline-none"
+        />
+        {selectedPrograma && !isOpen && (
+          <div className="absolute right-3 px-1.5 py-0.5 bg-green-50 rounded text-[10px] font-medium text-green-600 flex items-center gap-1">
+            <CheckCircle size={10} />
+            Seleccionado
+          </div>
+        )}
+      </div>
+
+      {isOpen && filteredOptions.length > 0 && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-56 overflow-y-auto">
+          {filteredOptions.map((opt, idx) => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => handleSelect(opt)}
+              className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                idx === highlightedIndex ? 'bg-orange-50 text-[#F7941D]' : 'hover:bg-gray-50'
+              } ${value === opt.id ? 'bg-orange-50/50 font-medium text-[#F7941D]' : 'text-gray-700'}`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <BookOpen size={14} className={value === opt.id ? 'text-[#F7941D]' : 'text-gray-400'} />
+                  <span>{opt.nombre}</span>
+                </div>
+                {value === opt.id && <CheckCircle className="w-3.5 h-3.5 text-[#F7941D]" />}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// COMPONENTE SELECTOR DE ITEMS (reutilizable para logos y firmas)
+function ItemSelector({ items, selectedIds, onChange, maxSelection = 3, type = 'logo' }: { 
+  items: any[]; 
+  selectedIds: number[]; 
+  onChange: (ids: number[]) => void; 
+  maxSelection?: number;
+  type: 'logo' | 'firma';
+}) {
+  const toggleItem = (id: number) => {
+    if (selectedIds.includes(id)) {
+      onChange(selectedIds.filter(x => x !== id));
+    } else if (selectedIds.length < maxSelection) {
+      onChange([...selectedIds, id]);
+    }
+  };
+
+  const getItemImage = (item: any) => {
+    if (type === 'logo') return item.imagenLogo;
+    return item.imagenFirma;
+  };
+
+  const getItemName = (item: any) => {
+    if (type === 'logo') return item.nombre || `Logo #${item.id}`;
+    return `${item.nombreAutoridad} - ${item.cargo}`;
+  };
+
+  if (items.length === 0) return null;
+
+  return (
+    <div>
+      <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
+        {type === 'logo' ? <ImageIcon size={16} className="text-[#F7941D]" /> : <PenLine size={16} className="text-[#F7941D]" />}
+        {type === 'logo' ? 'Logos' : 'Firmas'} (máx. {maxSelection})
+      </label>
+      <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border border-gray-200 rounded-xl p-3 bg-gray-50">
+        {items.map(item => {
+          const isSelected = selectedIds.includes(item.id);
+          const isDisabled = !isSelected && selectedIds.length >= maxSelection;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => toggleItem(item.id)}
+              disabled={isDisabled}
+              className={`flex items-center gap-3 p-2 rounded-xl border-2 transition-all text-left ${
+                isSelected 
+                  ? 'border-[#F7941D] bg-orange-50 shadow-sm' 
+                  : isDisabled 
+                    ? 'border-gray-200 bg-gray-100 opacity-50 cursor-not-allowed' 
+                    : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              <div className="w-12 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden border border-gray-100">
+                {getItemImage(item) ? (
+                  <img src={getItemImage(item)} alt={getItemName(item)} className="max-w-full max-h-full object-contain" />
+                ) : (
+                  <ImageIcon size={20} className="text-gray-300" />
+                )}
+              </div>
+              <div className="flex-1">
+                <p className={`text-xs font-medium truncate ${isSelected ? 'text-[#F7941D]' : 'text-gray-700'}`}>
+                  {getItemName(item)}
+                </p>
+              </div>
+              {isSelected && <CheckCircle size={14} className="text-[#F7941D] flex-shrink-0" />}
+            </button>
+          );
+        })}
+      </div>
+      <p className="text-xs text-gray-400 mt-1">
+        {selectedIds.length}/{maxSelection} seleccionados
+      </p>
+    </div>
+  );
+}
 
 export default function ConfigCertificadosPage() {
   const [tab, setTab] = useState<Tab>('configuraciones');
 
-  /* ── datos compartidos ── */
   const [programas, setProgramas] = useState<Programa[]>([]);
   const [firmas, setFirmas] = useState<Firma[]>([]);
   const [logos, setLogos] = useState<Logo[]>([]);
   const [configs, setConfigs] = useState<ConfiguracionCertificado[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => { cargarTodo(); }, []);
 
@@ -56,21 +237,31 @@ export default function ConfigCertificadosPage() {
   const [savingConfig, setSavingConfig] = useState(false);
 
   const abrirCrearConfig = () => {
-    setConfigForm({ ...emptyConfig, programaId: programas[0]?.id || 0 });
+    setConfigForm({ ...emptyConfig, programaId: programas[0]?.id || 0, activo: true });
     setSelFirmas([]); setSelLogos([]);
-    setEditingConfigId(null); setConfigModal(true);
+    setEditingConfigId(null); setErrors({});
+    setConfigModal(true);
   };
 
   const abrirEditarConfig = (c: ConfiguracionCertificado) => {
     setConfigForm({ programaId: c.programaId, plantillaUrl: c.plantillaUrl || '', activo: c.activo });
     setSelFirmas(c.firmas?.map(f => f.firmaId) || []);
     setSelLogos(c.logos?.map(l => l.logoId) || []);
-    setEditingConfigId(c.id); setConfigModal(true);
+    setEditingConfigId(c.id); setErrors({});
+    setConfigModal(true);
+  };
+
+  const validateConfig = () => {
+    const newErrors: Record<string, string> = {};
+    if (!configForm.programaId || configForm.programaId === 0) newErrors.programaId = 'Selecciona un programa';
+    if (!configForm.plantillaUrl) newErrors.plantillaUrl = 'Sube la imagen de fondo de la plantilla';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const guardarConfig = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!configForm.plantillaUrl) { setError('Sube la imagen de fondo de la plantilla'); return; }
+    if (!validateConfig()) return;
     setSavingConfig(true);
     const data = { ...configForm, firmas: selFirmas.map(id => ({ firmaId: id })), logos: selLogos.map(id => ({ logoId: id })) };
     try {
@@ -84,11 +275,13 @@ export default function ConfigCertificadosPage() {
 
   const eliminarConfig = async (id: number) => {
     if (!confirm('¿Eliminar esta configuración?')) return;
-    try { await ConfiguracionesCertificadoService.remove(id); await cargarTodo(); } catch (e: any) { setError(e.message); }
+    try { await ConfiguracionesCertificadoService.remove(id); await cargarTodo(); } 
+    catch (e: any) { setError(e.message); }
   };
 
   const toggleConfig = async (id: number) => {
-    try { await ConfiguracionesCertificadoService.toggleActive(id); await cargarTodo(); } catch (e: any) { setError(e.message); }
+    try { await ConfiguracionesCertificadoService.toggleActive(id); await cargarTodo(); } 
+    catch (e: any) { setError(e.message); }
   };
 
   /* ══════════════════════════════════════════════════
@@ -98,13 +291,21 @@ export default function ConfigCertificadosPage() {
   const [editingLogoId, setEditingLogoId] = useState<number | null>(null);
   const [logoForm, setLogoForm] = useState<CreateLogoDto>(emptyLogo);
   const [savingLogo, setSavingLogo] = useState(false);
+  const [logoErrors, setLogoErrors] = useState<Record<string, string>>({});
 
-  const abrirCrearLogo = () => { setLogoForm({ ...emptyLogo }); setEditingLogoId(null); setLogoModal(true); };
-  const abrirEditarLogo = (l: Logo) => { setLogoForm({ nombre: l.nombre || '', imagenLogo: l.imagenLogo, activo: l.activo }); setEditingLogoId(l.id); setLogoModal(true); };
+  const abrirCrearLogo = () => { setLogoForm({ ...emptyLogo, activo: true }); setEditingLogoId(null); setLogoErrors({}); setLogoModal(true); };
+  const abrirEditarLogo = (l: Logo) => { setLogoForm({ nombre: l.nombre || '', imagenLogo: l.imagenLogo, activo: l.activo }); setEditingLogoId(l.id); setLogoErrors({}); setLogoModal(true); };
+
+  const validateLogo = () => {
+    const newErrors: Record<string, string> = {};
+    if (!logoForm.imagenLogo) newErrors.imagenLogo = 'Selecciona una imagen';
+    setLogoErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const guardarLogo = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!logoForm.imagenLogo) { setError('Selecciona una imagen'); return; }
+    if (!validateLogo()) return;
     setSavingLogo(true);
     try {
       editingLogoId ? await LogosService.update(editingLogoId, logoForm) : await LogosService.create(logoForm);
@@ -115,11 +316,13 @@ export default function ConfigCertificadosPage() {
 
   const eliminarLogo = async (id: number) => {
     if (!confirm('¿Eliminar este logo?')) return;
-    try { await LogosService.remove(id); await cargarTodo(); } catch (e: any) { setError(e.message); }
+    try { await LogosService.remove(id); await cargarTodo(); } 
+    catch (e: any) { setError(e.message); }
   };
 
   const toggleLogo = async (id: number) => {
-    try { await LogosService.toggleActive(id); await cargarTodo(); } catch (e: any) { setError(e.message); }
+    try { await LogosService.toggleActive(id); await cargarTodo(); } 
+    catch (e: any) { setError(e.message); }
   };
 
   /* ══════════════════════════════════════════════════
@@ -129,14 +332,23 @@ export default function ConfigCertificadosPage() {
   const [editingFirmaId, setEditingFirmaId] = useState<number | null>(null);
   const [firmaForm, setFirmaForm] = useState<CreateFirmaDto>(emptyFirma);
   const [savingFirma, setSavingFirma] = useState(false);
+  const [firmaErrors, setFirmaErrors] = useState<Record<string, string>>({});
 
-  const abrirCrearFirma = () => { setFirmaForm({ ...emptyFirma }); setEditingFirmaId(null); setFirmaModal(true); };
-  const abrirEditarFirma = (f: Firma) => { setFirmaForm({ nombreAutoridad: f.nombreAutoridad, cargo: f.cargo, imagenFirma: f.imagenFirma, activo: f.activo }); setEditingFirmaId(f.id); setFirmaModal(true); };
+  const abrirCrearFirma = () => { setFirmaForm({ ...emptyFirma, activo: true }); setEditingFirmaId(null); setFirmaErrors({}); setFirmaModal(true); };
+  const abrirEditarFirma = (f: Firma) => { setFirmaForm({ nombreAutoridad: f.nombreAutoridad, cargo: f.cargo, imagenFirma: f.imagenFirma, activo: f.activo }); setEditingFirmaId(f.id); setFirmaErrors({}); setFirmaModal(true); };
+
+  const validateFirma = () => {
+    const newErrors: Record<string, string> = {};
+    if (!firmaForm.nombreAutoridad?.trim()) newErrors.nombreAutoridad = 'Ingresa el nombre de la autoridad';
+    if (!firmaForm.cargo?.trim()) newErrors.cargo = 'Ingresa el cargo';
+    if (!firmaForm.imagenFirma) newErrors.imagenFirma = 'Sube la imagen de la firma';
+    setFirmaErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const guardarFirma = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!firmaForm.nombreAutoridad.trim() || !firmaForm.cargo.trim()) { setError('Nombre y cargo son obligatorios'); return; }
-    if (!firmaForm.imagenFirma) { setError('Sube la imagen de la firma'); return; }
+    if (!validateFirma()) return;
     setSavingFirma(true);
     try {
       editingFirmaId ? await FirmasService.update(editingFirmaId, firmaForm) : await FirmasService.create(firmaForm);
@@ -147,16 +359,15 @@ export default function ConfigCertificadosPage() {
 
   const eliminarFirma = async (id: number) => {
     if (!confirm('¿Eliminar esta firma?')) return;
-    try { await FirmasService.remove(id); await cargarTodo(); } catch (e: any) { setError(e.message); }
+    try { await FirmasService.remove(id); await cargarTodo(); } 
+    catch (e: any) { setError(e.message); }
   };
 
   const toggleFirma = async (id: number) => {
-    try { await FirmasService.toggleActive(id); await cargarTodo(); } catch (e: any) { setError(e.message); }
+    try { await FirmasService.toggleActive(id); await cargarTodo(); } 
+    catch (e: any) { setError(e.message); }
   };
 
-  /* ══════════════════════════════════════════════════
-     RENDER
-  ══════════════════════════════════════════════════ */
   const tabs: { key: Tab; label: string; icon: React.ReactNode; count: number }[] = [
     { key: 'configuraciones', label: 'Configuraciones', icon: <Settings size={15} />, count: configs.length },
     { key: 'logos', label: 'Logos', icon: <ImageIcon size={15} />, count: logos.length },
@@ -206,7 +417,7 @@ export default function ConfigCertificadosPage() {
           </div>
         ) : (
           <>
-            {/* ══ TAB: CONFIGURACIONES ══ */}
+            {/* TAB: CONFIGURACIONES */}
             {tab === 'configuraciones' && (
               <div className="space-y-4">
                 <div className="flex justify-end">
@@ -263,14 +474,14 @@ export default function ConfigCertificadosPage() {
                             </tr>
                           ))}
                         </tbody>
-                      </table>
+                       </table>
                     </div>
                   </div>
                 )}
               </div>
             )}
 
-            {/* ══ TAB: LOGOS ══ */}
+            {/* TAB: LOGOS */}
             {tab === 'logos' && (
               <div className="space-y-4">
                 <div className="flex justify-end">
@@ -287,14 +498,13 @@ export default function ConfigCertificadosPage() {
                 ) : (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                     {logos.map(logo => (
-                      <div key={logo.id}
-                        className={`table-card overflow-hidden ${logo.activo ? '' : 'opacity-60'}`}>
+                      <div key={logo.id} className={`table-card overflow-hidden ${logo.activo ? '' : 'opacity-60'}`}>
                         <div className="aspect-square bg-gray-50 flex items-center justify-center p-3">
                           {logo.imagenLogo
                             ? <img src={logo.imagenLogo} alt={logo.nombre || 'Logo'} className="max-w-full max-h-full object-contain" />
                             : <ImageIcon size={36} className="text-gray-300" />}
                         </div>
-                        <div className="p-3">
+                        <div className="p-3 border-t border-gray-100">
                           <p className="text-sm font-medium text-gray-800 truncate">{logo.nombre || 'Sin nombre'}</p>
                           <span className={`inline-block mt-1 px-2 py-0.5 rounded-md text-xs font-medium ${logo.activo ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
                             {logo.activo ? 'Activo' : 'Inactivo'}
@@ -318,7 +528,7 @@ export default function ConfigCertificadosPage() {
               </div>
             )}
 
-            {/* ══ TAB: FIRMAS ══ */}
+            {/* TAB: FIRMAS */}
             {tab === 'firmas' && (
               <div className="space-y-4">
                 <div className="flex justify-end">
@@ -350,14 +560,14 @@ export default function ConfigCertificadosPage() {
                                 {firma.imagenFirma
                                   ? <img src={firma.imagenFirma} alt={firma.nombreAutoridad} className="h-12 max-w-[120px] object-contain bg-gray-50 rounded-lg border border-gray-100 p-1" />
                                   : <div className="h-12 w-24 bg-gray-100 rounded-lg flex items-center justify-center"><PenLine size={16} className="text-gray-300" /></div>}
-                              </td>
+                               </td>
                               <td className="table-cell font-medium text-gray-900">{firma.nombreAutoridad}</td>
                               <td className="table-cell text-sm text-gray-600">{firma.cargo}</td>
                               <td className="table-cell">
                                 <span className={firma.activo ? 'badge-green' : 'badge-gray'}>
                                   {firma.activo ? 'Activo' : 'Inactivo'}
                                 </span>
-                              </td>
+                               </td>
                               <td className="table-cell">
                                 <div className="flex items-center justify-end gap-1">
                                   <button onClick={() => toggleFirma(firma.id)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
@@ -370,11 +580,11 @@ export default function ConfigCertificadosPage() {
                                     <Trash2 size={15} />
                                   </button>
                                 </div>
-                              </td>
-                            </tr>
+                               </td>
+                             </tr>
                           ))}
                         </tbody>
-                      </table>
+                       </table>
                     </div>
                   </div>
                 )}
@@ -384,122 +594,294 @@ export default function ConfigCertificadosPage() {
         )}
       </div>
 
-      {/* ═══ MODAL: CONFIGURACIÓN ═══ */}
+      {/* MODAL: CONFIGURACIÓN MEJORADO */}
       <Modal isOpen={configModal} onClose={() => setConfigModal(false)} title={editingConfigId ? 'Editar Configuración' : 'Nueva Configuración'} size="lg">
         <form onSubmit={guardarConfig} className="space-y-5">
+          
+          {/* Programa con combobox */}
           <div>
-            <label className="form-label">Programa *</label>
-            <select value={configForm.programaId} onChange={e => setConfigForm({ ...configForm, programaId: Number(e.target.value) })}
-              className="form-input" required>
-              <option value={0} disabled>Seleccionar programa...</option>
-              {programas.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
-            </select>
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+              <BookOpen size={16} className="text-[#F7941D]" />
+              Programa *
+            </label>
+            <ProgramaCombobox
+              options={programas}
+              value={configForm.programaId}
+              onChange={(id) => setConfigForm({ ...configForm, programaId: id })}
+              placeholder="Buscar programa..."
+            />
+            {errors.programaId && <p className="text-xs text-red-500 mt-1">{errors.programaId}</p>}
           </div>
 
-          <ImageUpload label="Imagen de Fondo de la Plantilla *" value={configForm.plantillaUrl}
-            onChange={base64 => setConfigForm({ ...configForm, plantillaUrl: base64 })}
-            accept="image/jpeg,image/png,image/webp" />
-          <p className="text-xs text-gray-400 -mt-3">Recomendado: horizontal, mín. 1122×793 px (A4 landscape)</p>
+          {/* Plantilla */}
+          <div>
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+              <ImageIcon size={16} className="text-[#F7941D]" />
+              Imagen de fondo de la plantilla *
+            </label>
+            <ImageUpload 
+              label="" 
+              value={configForm.plantillaUrl}
+              onChange={base64 => setConfigForm({ ...configForm, plantillaUrl: base64 })}
+              accept="image/jpeg,image/png,image/webp" 
+            />
+            {errors.plantillaUrl && <p className="text-xs text-red-500 mt-1">{errors.plantillaUrl}</p>}
+            <p className="text-xs text-gray-400 mt-1">Recomendado: horizontal, mín. 1122×793 px (A4 landscape)</p>
+          </div>
 
+          {/* Preview de plantilla */}
+          {configForm.plantillaUrl && (
+            <div className="mt-2 p-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border border-orange-100">
+              <div className="flex items-center gap-2 text-xs font-medium text-orange-600 mb-2">
+                <Eye size={12} />
+                Vista previa de la plantilla
+              </div>
+              <img src={configForm.plantillaUrl} alt="Plantilla preview" className="max-h-32 rounded-lg border border-orange-200 shadow-sm" />
+            </div>
+          )}
+
+          {/* Selector de Firmas */}
           {firmas.length > 0 && (
-            <div>
-              <label className="form-label">Firmas (máx. 3)</label>
-              <div className="space-y-2 max-h-36 overflow-y-auto border border-gray-200 rounded-xl p-3">
-                {firmas.map(f => (
-                  <label key={f.id} className="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" checked={selFirmas.includes(f.id)}
-                      onChange={() => setSelFirmas(prev => prev.includes(f.id) ? prev.filter(x => x !== f.id) : [...prev, f.id])}
-                      disabled={!selFirmas.includes(f.id) && selFirmas.length >= 3} className="rounded" />
-                    {f.imagenFirma && <img src={f.imagenFirma} alt={f.nombreAutoridad} className="h-8 w-16 object-contain bg-gray-50 rounded border border-gray-100" />}
-                    <span className="text-sm text-gray-700">{f.nombreAutoridad} — {f.cargo}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
+            <ItemSelector
+              items={firmas}
+              selectedIds={selFirmas}
+              onChange={setSelFirmas}
+              maxSelection={3}
+              type="firma"
+            />
           )}
 
+          {/* Selector de Logos */}
           {logos.length > 0 && (
-            <div>
-              <label className="form-label">Logos (máx. 3)</label>
-              <div className="space-y-2 max-h-36 overflow-y-auto border border-gray-200 rounded-xl p-3">
-                {logos.map(l => (
-                  <label key={l.id} className="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" checked={selLogos.includes(l.id)}
-                      onChange={() => setSelLogos(prev => prev.includes(l.id) ? prev.filter(x => x !== l.id) : [...prev, l.id])}
-                      disabled={!selLogos.includes(l.id) && selLogos.length >= 3} className="rounded" />
-                    {l.imagenLogo && <img src={l.imagenLogo} alt={l.nombre} className="h-8 w-16 object-contain bg-gray-50 rounded border border-gray-100" />}
-                    <span className="text-sm text-gray-700">{l.nombre || `Logo #${l.id}`}</span>
-                  </label>
-                ))}
+            <ItemSelector
+              items={logos}
+              selectedIds={selLogos}
+              onChange={setSelLogos}
+              maxSelection={3}
+              type="logo"
+            />
+          )}
+
+          {/* Estado activo */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setConfigForm({ ...configForm, activo: !configForm.activo })}
+              className="relative w-12 h-6 rounded-full transition-colors duration-200 flex-shrink-0 shadow-sm"
+              style={{ backgroundColor: configForm.activo ? '#F7941D' : '#D1D5DB' }}
+            >
+              <span
+                className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200"
+                style={{ transform: configForm.activo ? 'translateX(24px)' : 'translateX(0)' }}
+              />
+            </button>
+            <span className="text-sm text-gray-700">Configuración activa</span>
+          </div>
+
+          {/* Botones */}
+          <div className="flex gap-3 pt-4 border-t border-gray-100">
+            <button
+              type="submit"
+              disabled={savingConfig}
+              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {savingConfig ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>{editingConfigId ? 'Actualizar configuración' : 'Crear configuración'}</>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfigModal(false)}
+              className="px-5 py-2.5 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
+
+        </form>
+      </Modal>
+
+      {/* MODAL: LOGO MEJORADO */}
+      <Modal isOpen={logoModal} onClose={() => setLogoModal(false)} title={editingLogoId ? 'Editar Logo' : 'Nuevo Logo'} size="md">
+        <form onSubmit={guardarLogo} className="space-y-5">
+          <div>
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+              <FileText size={16} className="text-[#F7941D]" />
+              Nombre (opcional)
+            </label>
+            <input
+              value={logoForm.nombre || ''}
+              onChange={e => setLogoForm({ ...logoForm, nombre: e.target.value })}
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D]"
+              placeholder="Ej: Logo UNMSM"
+            />
+          </div>
+
+          <div>
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+              <ImageIcon size={16} className="text-[#F7941D]" />
+              Imagen del Logo *
+            </label>
+            <ImageUpload 
+              label="" 
+              value={logoForm.imagenLogo}
+              onChange={base64 => setLogoForm({ ...logoForm, imagenLogo: base64 })}
+            />
+            {logoErrors.imagenLogo && <p className="text-xs text-red-500 mt-1">{logoErrors.imagenLogo}</p>}
+          </div>
+
+          {logoForm.imagenLogo && (
+            <div className="p-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border border-orange-100">
+              <div className="flex items-center gap-2 text-xs font-medium text-orange-600 mb-2">
+                <Eye size={12} />
+                Vista previa
               </div>
+              <img src={logoForm.imagenLogo} alt="Logo preview" className="h-16 object-contain" />
             </div>
           )}
 
-          <div className="flex items-center gap-2">
-            <input type="checkbox" id="activoConfig" checked={configForm.activo ?? true}
-              onChange={e => setConfigForm({ ...configForm, activo: e.target.checked })} className="rounded" />
-            <label htmlFor="activoConfig" className="text-sm text-gray-700">Configuración activa</label>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setLogoForm({ ...logoForm, activo: !logoForm.activo })}
+              className="relative w-12 h-6 rounded-full transition-colors duration-200 flex-shrink-0 shadow-sm"
+              style={{ backgroundColor: logoForm.activo ? '#F7941D' : '#D1D5DB' }}
+            >
+              <span
+                className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200"
+                style={{ transform: logoForm.activo ? 'translateX(24px)' : 'translateX(0)' }}
+              />
+            </button>
+            <span className="text-sm text-gray-700">Logo activo</span>
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <button type="submit" disabled={savingConfig || !configForm.plantillaUrl} className="modal-btn-primary">
-              {savingConfig ? 'Guardando...' : editingConfigId ? 'Actualizar' : 'Crear'}
+          <div className="flex gap-3 pt-4 border-t border-gray-100">
+            <button
+              type="submit"
+              disabled={savingLogo}
+              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {savingLogo ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>{editingLogoId ? 'Actualizar logo' : 'Crear logo'}</>
+              )}
             </button>
-            <button type="button" onClick={() => setConfigModal(false)} className="modal-btn-cancel">Cancelar</button>
+            <button
+              type="button"
+              onClick={() => setLogoModal(false)}
+              className="px-5 py-2.5 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Cancelar
+            </button>
           </div>
         </form>
       </Modal>
 
-      {/* ═══ MODAL: LOGO ═══ */}
-      <Modal isOpen={logoModal} onClose={() => setLogoModal(false)} title={editingLogoId ? 'Editar Logo' : 'Nuevo Logo'} size="sm">
-        <form onSubmit={guardarLogo} className="space-y-4">
+      {/* MODAL: FIRMA MEJORADO */}
+      <Modal isOpen={firmaModal} onClose={() => setFirmaModal(false)} title={editingFirmaId ? 'Editar Firma' : 'Nueva Firma'} size="md">
+        <form onSubmit={guardarFirma} className="space-y-5">
           <div>
-            <label className="form-label">Nombre (opcional)</label>
-            <input value={logoForm.nombre || ''} onChange={e => setLogoForm({ ...logoForm, nombre: e.target.value })}
-              placeholder="Ej: Logo UNMSM" className="form-input" />
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+              <Users size={16} className="text-[#F7941D]" />
+              Nombre de la autoridad *
+            </label>
+            <input
+              value={firmaForm.nombreAutoridad}
+              onChange={e => setFirmaForm({ ...firmaForm, nombreAutoridad: e.target.value })}
+              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                firmaErrors.nombreAutoridad ? 'border-red-300 bg-red-50' : 'border-gray-200'
+              }`}
+              placeholder="Ej: Dr. Juan Pérez García"
+            />
+            {firmaErrors.nombreAutoridad && <p className="text-xs text-red-500 mt-1">{firmaErrors.nombreAutoridad}</p>}
           </div>
-          <ImageUpload label="Imagen del Logo *" value={logoForm.imagenLogo}
-            onChange={base64 => setLogoForm({ ...logoForm, imagenLogo: base64 })} />
-          <div className="flex items-center gap-2">
-            <input type="checkbox" id="activoLogo" checked={logoForm.activo ?? true}
-              onChange={e => setLogoForm({ ...logoForm, activo: e.target.checked })} className="rounded" />
-            <label htmlFor="activoLogo" className="text-sm text-gray-700">Activo</label>
-          </div>
-          <div className="flex gap-3 pt-2">
-            <button type="submit" disabled={savingLogo || !logoForm.imagenLogo} className="modal-btn-primary">
-              {savingLogo ? 'Guardando...' : editingLogoId ? 'Actualizar' : 'Crear'}
-            </button>
-            <button type="button" onClick={() => setLogoModal(false)} className="modal-btn-cancel">Cancelar</button>
-          </div>
-        </form>
-      </Modal>
 
-      {/* ═══ MODAL: FIRMA ═══ */}
-      <Modal isOpen={firmaModal} onClose={() => setFirmaModal(false)} title={editingFirmaId ? 'Editar Firma' : 'Nueva Firma'} size="sm">
-        <form onSubmit={guardarFirma} className="space-y-4">
           <div>
-            <label className="form-label">Nombre de la Autoridad *</label>
-            <input value={firmaForm.nombreAutoridad} onChange={e => setFirmaForm({ ...firmaForm, nombreAutoridad: e.target.value })}
-              placeholder="Ej: Dr. Juan Pérez García" required className="form-input" />
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+              <Shield size={16} className="text-[#F7941D]" />
+              Cargo *
+            </label>
+            <input
+              value={firmaForm.cargo}
+              onChange={e => setFirmaForm({ ...firmaForm, cargo: e.target.value })}
+              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                firmaErrors.cargo ? 'border-red-300 bg-red-50' : 'border-gray-200'
+              }`}
+              placeholder="Ej: Director de Posgrado"
+            />
+            {firmaErrors.cargo && <p className="text-xs text-red-500 mt-1">{firmaErrors.cargo}</p>}
           </div>
+
           <div>
-            <label className="form-label">Cargo *</label>
-            <input value={firmaForm.cargo} onChange={e => setFirmaForm({ ...firmaForm, cargo: e.target.value })}
-              placeholder="Ej: Director de Posgrado" required className="form-input" />
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+              <PenLine size={16} className="text-[#F7941D]" />
+              Imagen de la firma *
+            </label>
+            <ImageUpload 
+              label="" 
+              value={firmaForm.imagenFirma}
+              onChange={base64 => setFirmaForm({ ...firmaForm, imagenFirma: base64 })}
+              accept="image/png,image/jpeg,image/webp"
+            />
+            {firmaErrors.imagenFirma && <p className="text-xs text-red-500 mt-1">{firmaErrors.imagenFirma}</p>}
           </div>
-          <ImageUpload label="Imagen de la Firma *" value={firmaForm.imagenFirma}
-            onChange={base64 => setFirmaForm({ ...firmaForm, imagenFirma: base64 })}
-            accept="image/png,image/jpeg,image/webp" />
-          <div className="flex items-center gap-2">
-            <input type="checkbox" id="activoFirma" checked={firmaForm.activo ?? true}
-              onChange={e => setFirmaForm({ ...firmaForm, activo: e.target.checked })} className="rounded" />
-            <label htmlFor="activoFirma" className="text-sm text-gray-700">Activo</label>
-          </div>
-          <div className="flex gap-3 pt-2">
-            <button type="submit" disabled={savingFirma || !firmaForm.imagenFirma} className="modal-btn-primary">
-              {savingFirma ? 'Guardando...' : editingFirmaId ? 'Actualizar' : 'Crear'}
+
+          {firmaForm.imagenFirma && (
+            <div className="p-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border border-orange-100">
+              <div className="flex items-center gap-2 text-xs font-medium text-orange-600 mb-2">
+                <Eye size={12} />
+                Vista previa
+              </div>
+              <img src={firmaForm.imagenFirma} alt="Firma preview" className="h-12 object-contain" />
+            </div>
+          )}
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setFirmaForm({ ...firmaForm, activo: !firmaForm.activo })}
+              className="relative w-12 h-6 rounded-full transition-colors duration-200 flex-shrink-0 shadow-sm"
+              style={{ backgroundColor: firmaForm.activo ? '#F7941D' : '#D1D5DB' }}
+            >
+              <span
+                className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200"
+                style={{ transform: firmaForm.activo ? 'translateX(24px)' : 'translateX(0)' }}
+              />
             </button>
-            <button type="button" onClick={() => setFirmaModal(false)} className="modal-btn-cancel">Cancelar</button>
+            <span className="text-sm text-gray-700">Firma activa</span>
+          </div>
+
+          <div className="flex gap-3 pt-4 border-t border-gray-100">
+            <button
+              type="submit"
+              disabled={savingFirma}
+              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {savingFirma ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>{editingFirmaId ? 'Actualizar firma' : 'Crear firma'}</>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => setFirmaModal(false)}
+              className="px-5 py-2.5 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Cancelar
+            </button>
           </div>
         </form>
       </Modal>

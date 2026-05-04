@@ -1,10 +1,140 @@
-import { useState, useEffect } from 'react';
-import { Plus, Search, UserCog, Edit2, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { 
+  Plus, Search, UserCog, Edit2, Trash2, ToggleLeft, ToggleRight, 
+  Mail, User, Lock, Shield, Eye, CheckCircle, Briefcase, Users, Award
+} from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import { UsuariosService, Usuario, CreateUsuarioDto, UpdateUsuarioDto } from '@/lib/services/usuarios.service';
 import { RolesService, Rol } from '@/lib/services/roles.service';
 
-const emptyForm: CreateUsuarioDto = { nombres: '', apellidos: '', usuario: '', correo: '', contrasena: '', rolId: 0 };
+const emptyForm: CreateUsuarioDto = { 
+  nombres: '', 
+  apellidos: '', 
+  usuario: '', 
+  correo: '', 
+  contrasena: '', 
+  rolId: 0 
+};
+
+// COMPONENTE COMBOBOX PARA ROLES
+function RolCombobox({ options, value, onChange, placeholder = "Buscar rol..." }: { 
+  options: Rol[]; 
+  value: number; 
+  onChange: (id: number) => void; 
+  placeholder?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const selectedRol = options.find(o => o.id === value);
+
+  const filteredOptions = useMemo(() => {
+    if (!searchTerm.trim()) return options;
+    const term = searchTerm.toLowerCase();
+    return options.filter(opt => opt.nombre.toLowerCase().includes(term));
+  }, [options, searchTerm]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+        setSearchTerm('');
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSelect = (rol: Rol) => {
+    onChange(rol.id);
+    setIsOpen(false);
+    setSearchTerm('');
+    setHighlightedIndex(-1);
+  };
+
+  const getRolIcon = (nombre: string) => {
+    const name = nombre.toLowerCase();
+    if (name.includes('admin')) return <Shield size={16} />;
+    if (name.includes('docente')) return <Briefcase size={16} />;
+    if (name.includes('estudiante')) return <Users size={16} />;
+    return <Award size={16} />;
+  };
+
+  return (
+    <div ref={containerRef} className="relative">
+      <div className={`relative flex items-center border rounded-xl transition-all ${
+        isOpen ? 'border-[#F7941D] ring-2 ring-[#F7941D]/20' : 'border-gray-200'
+      }`}>
+        <Shield className="absolute left-3 w-4 h-4 text-gray-400" />
+        <input
+          type="text"
+          value={isOpen ? searchTerm : (selectedRol?.nombre || '')}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setIsOpen(true);
+          }}
+          onFocus={() => {
+            setIsOpen(true);
+            setSearchTerm('');
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              setHighlightedIndex(prev => Math.min(prev + 1, filteredOptions.length - 1));
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              setHighlightedIndex(prev => Math.max(prev - 1, -1));
+            } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+              e.preventDefault();
+              handleSelect(filteredOptions[highlightedIndex]);
+            } else if (e.key === 'Escape') {
+              setIsOpen(false);
+              setSearchTerm('');
+            }
+          }}
+          placeholder={placeholder}
+          className="w-full pl-9 pr-3 py-2.5 bg-transparent rounded-xl text-sm outline-none"
+        />
+        {selectedRol && !isOpen && (
+          <div className="absolute right-3 px-1.5 py-0.5 bg-green-50 rounded text-[10px] font-medium text-green-600 flex items-center gap-1">
+            <CheckCircle size={10} />
+            Seleccionado
+          </div>
+        )}
+      </div>
+
+      {isOpen && filteredOptions.length > 0 && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-56 overflow-y-auto">
+          {filteredOptions.map((opt, idx) => {
+            const Icon = getRolIcon(opt.nombre);
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => handleSelect(opt)}
+                className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                  idx === highlightedIndex ? 'bg-orange-50 text-[#F7941D]' : 'hover:bg-gray-50'
+                } ${value === opt.id ? 'bg-orange-50/50 font-medium text-[#F7941D]' : 'text-gray-700'}`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={`${value === opt.id ? 'text-[#F7941D]' : 'text-gray-400'}`}>
+                      {Icon}
+                    </span>
+                    <span>{opt.nombre}</span>
+                  </div>
+                  {value === opt.id && <CheckCircle className="w-3.5 h-3.5 text-[#F7941D]" />}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function UsuariosPage() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
@@ -16,6 +146,7 @@ export default function UsuariosPage() {
   const [form, setForm] = useState<CreateUsuarioDto>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => { cargar(); }, []);
 
@@ -23,47 +154,112 @@ export default function UsuariosPage() {
     try {
       setLoading(true);
       const [u, r] = await Promise.all([UsuariosService.findAll(), RolesService.findAll()]);
-      setUsuarios(u); setRoles(r);
-    } catch (e: any) { setError(e.message); } finally { setLoading(false); }
+      setUsuarios(u); 
+      setRoles(r);
+    } catch (e: any) { 
+      setError(e.message); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   const abrirCrear = () => {
     setForm({ ...emptyForm, rolId: roles[0]?.id || 0 });
-    setEditingId(null); setModalOpen(true);
+    setEditingId(null); 
+    setErrors({});
+    setModalOpen(true);
   };
 
   const abrirEditar = (u: Usuario) => {
-    setForm({ nombres: u.nombres, apellidos: u.apellidos, usuario: u.usuario, correo: u.correo, contrasena: '', rolId: u.rolId });
-    setEditingId(u.id); setModalOpen(true);
+    setForm({ 
+      nombres: u.nombres, 
+      apellidos: u.apellidos, 
+      usuario: u.usuario, 
+      correo: u.correo, 
+      contrasena: '', 
+      rolId: u.rolId 
+    });
+    setEditingId(u.id); 
+    setErrors({});
+    setModalOpen(true);
+  };
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!form.nombres?.trim()) newErrors.nombres = 'Ingresa los nombres';
+    if (!form.apellidos?.trim()) newErrors.apellidos = 'Ingresa los apellidos';
+    if (!form.usuario?.trim()) newErrors.usuario = 'Ingresa el nombre de usuario';
+    if (!form.correo?.trim()) newErrors.correo = 'Ingresa el correo electrónico';
+    if (form.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correo)) {
+      newErrors.correo = 'Ingresa un correo válido';
+    }
+    if (!editingId && !form.contrasena) {
+      newErrors.contrasena = 'Ingresa la contraseña';
+    }
+    if (form.contrasena && form.contrasena.length < 6) {
+      newErrors.contrasena = 'La contraseña debe tener al menos 6 caracteres';
+    }
+    if (!form.rolId || form.rolId === 0) newErrors.rolId = 'Selecciona un rol';
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const guardar = async (e: React.FormEvent) => {
-    e.preventDefault(); setSaving(true);
+    e.preventDefault();
+    if (!validateForm()) return;
+    
+    setSaving(true);
     try {
       if (editingId) {
-        const update: UpdateUsuarioDto = { nombres: form.nombres, apellidos: form.apellidos, usuario: form.usuario, correo: form.correo, rolId: form.rolId };
+        const update: UpdateUsuarioDto = { 
+          nombres: form.nombres, 
+          apellidos: form.apellidos, 
+          usuario: form.usuario, 
+          correo: form.correo, 
+          rolId: form.rolId 
+        };
         if (form.contrasena) update.contrasena = form.contrasena;
         await UsuariosService.update(editingId, update);
       } else {
         await UsuariosService.create(form);
       }
-      setModalOpen(false); await cargar();
-    } catch (e: any) { setError(e.message); } finally { setSaving(false); }
+      setModalOpen(false); 
+      await cargar();
+    } catch (e: any) { 
+      setError(e.message); 
+    } finally { 
+      setSaving(false); 
+    }
   };
 
   const eliminar = async (id: number) => {
     if (!confirm('¿Eliminar este usuario?')) return;
-    try { await UsuariosService.remove(id); await cargar(); } catch (e: any) { setError(e.message); }
+    try { await UsuariosService.remove(id); await cargar(); } 
+    catch (e: any) { setError(e.message); }
   };
 
   const toggleActivo = async (u: Usuario) => {
-    try { await UsuariosService.update(u.id, { activo: !u.activo }); await cargar(); } catch (e: any) { setError(e.message); }
+    try { await UsuariosService.update(u.id, { activo: !u.activo }); await cargar(); } 
+    catch (e: any) { setError(e.message); }
   };
 
   const filtrados = usuarios.filter(u => {
     const q = search.toLowerCase();
-    return u.nombres.toLowerCase().includes(q) || u.apellidos.toLowerCase().includes(q) || u.usuario.toLowerCase().includes(q) || u.correo.toLowerCase().includes(q);
+    return u.nombres.toLowerCase().includes(q) || 
+           u.apellidos.toLowerCase().includes(q) || 
+           u.usuario.toLowerCase().includes(q) || 
+           u.correo.toLowerCase().includes(q);
   });
+
+  const getRolBadgeColor = (rolNombre: string) => {
+    const name = rolNombre.toLowerCase();
+    if (name.includes('admin')) return 'bg-red-50 text-red-700';
+    if (name.includes('docente')) return 'bg-blue-50 text-blue-700';
+    if (name.includes('estudiante')) return 'bg-green-50 text-green-700';
+    return 'bg-orange-50 text-orange-700';
+  };
 
   return (
     <div className="page-root">
@@ -121,17 +317,23 @@ export default function UsuariosPage() {
                     <tr key={u.id} className="table-row">
                       <td className="table-cell">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                            style={{ backgroundColor: '#F7941D' }}>
-                            <span className="text-white text-xs font-semibold">{u.nombres[0]}{u.apellidos[0]}</span>
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-[#F7941D]">
+                            <span className="text-white text-xs font-semibold">
+                              {u.nombres[0]}{u.apellidos[0]}
+                            </span>
                           </div>
                           <span className="font-medium text-gray-900">@{u.usuario}</span>
                         </div>
-                      </td>
+                       </td>
                       <td className="table-cell text-gray-700">{u.nombres} {u.apellidos}</td>
-                      <td className="table-cell text-sm text-gray-500">{u.correo}</td>
+                      <td className="table-cell text-sm text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <Mail size={12} className="text-gray-300" />
+                          {u.correo}
+                        </div>
+                      </td>
                       <td className="table-cell">
-                        <span className="badge-orange">
+                        <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${getRolBadgeColor(u.rol?.nombre || '')}`}>
                           {u.rol?.nombre || (u.rolId === 1 ? 'Administrador' : 'Admisión')}
                         </span>
                       </td>
@@ -165,51 +367,181 @@ export default function UsuariosPage() {
         </div>
       </div>
 
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Editar Usuario' : 'Nuevo Usuario'}>
-        <form onSubmit={guardar} className="space-y-4">
+      {/* MODAL MEJORADO */}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editingId ? 'Editar Usuario' : 'Nuevo Usuario'}
+        size="lg"
+      >
+        <form onSubmit={guardar} className="space-y-5">
+          
+          {/* Nombres y Apellidos */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">Nombres *</label>
-              <input value={form.nombres} onChange={e => setForm({ ...form, nombres: e.target.value })}
-                className="form-input" required />
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+                <User size={16} className="text-[#F7941D]" />
+                Nombres *
+              </label>
+              <input
+                value={form.nombres}
+                onChange={e => setForm({ ...form, nombres: e.target.value })}
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                  errors.nombres ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                }`}
+                placeholder="Juan Carlos"
+                autoComplete="off"
+              />
+              {errors.nombres && <p className="text-xs text-red-500 mt-1">{errors.nombres}</p>}
             </div>
             <div>
-              <label className="form-label">Apellidos *</label>
-              <input value={form.apellidos} onChange={e => setForm({ ...form, apellidos: e.target.value })}
-                className="form-input" required />
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+                <User size={16} className="text-[#F7941D]" />
+                Apellidos *
+              </label>
+              <input
+                value={form.apellidos}
+                onChange={e => setForm({ ...form, apellidos: e.target.value })}
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                  errors.apellidos ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                }`}
+                placeholder="García López"
+                autoComplete="off"
+              />
+              {errors.apellidos && <p className="text-xs text-red-500 mt-1">{errors.apellidos}</p>}
             </div>
           </div>
+
+          {/* Usuario y Correo */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">Usuario *</label>
-              <input value={form.usuario} onChange={e => setForm({ ...form, usuario: e.target.value })}
-                className="form-input" placeholder="nombre_usuario" required />
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+                <User size={16} className="text-[#F7941D]" />
+                Nombre de usuario *
+              </label>
+              <input
+                value={form.usuario}
+                onChange={e => setForm({ ...form, usuario: e.target.value })}
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                  errors.usuario ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                }`}
+                placeholder="juan.garcia"
+                autoComplete="off"
+              />
+              {errors.usuario && <p className="text-xs text-red-500 mt-1">{errors.usuario}</p>}
             </div>
             <div>
-              <label className="form-label">Correo *</label>
-              <input type="email" value={form.correo} onChange={e => setForm({ ...form, correo: e.target.value })}
-                className="form-input" required />
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+                <Mail size={16} className="text-[#F7941D]" />
+                Correo electrónico *
+              </label>
+              <input
+                type="email"
+                value={form.correo}
+                onChange={e => setForm({ ...form, correo: e.target.value })}
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                  errors.correo ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                }`}
+                placeholder="juan@ejemplo.com"
+                autoComplete="off"
+              />
+              {errors.correo && <p className="text-xs text-red-500 mt-1">{errors.correo}</p>}
             </div>
           </div>
+
+          {/* Contraseña */}
           <div>
-            <label className="form-label">{editingId ? 'Nueva Contraseña (dejar vacío para no cambiar)' : 'Contraseña *'}</label>
-            <input type="password" value={form.contrasena} onChange={e => setForm({ ...form, contrasena: e.target.value })}
-              className="form-input" placeholder="••••••••" required={!editingId} />
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+              <Lock size={16} className="text-[#F7941D]" />
+              {editingId ? 'Nueva Contraseña (dejar vacío para no cambiar)' : 'Contraseña *'}
+            </label>
+            <input
+              type="password"
+              value={form.contrasena}
+              onChange={e => setForm({ ...form, contrasena: e.target.value })}
+              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                errors.contrasena ? 'border-red-300 bg-red-50' : 'border-gray-200'
+              }`}
+              placeholder="••••••••"
+              autoComplete="off"
+            />
+            {errors.contrasena && <p className="text-xs text-red-500 mt-1">{errors.contrasena}</p>}
+            {!editingId && (
+              <p className="text-xs text-gray-400 mt-1">Mínimo 6 caracteres</p>
+            )}
           </div>
+
+          {/* Rol con combobox */}
           <div>
-            <label className="form-label">Rol *</label>
-            <select value={form.rolId} onChange={e => setForm({ ...form, rolId: Number(e.target.value) })}
-              className="form-input" required>
-              <option value={0} disabled>Seleccionar rol...</option>
-              {roles.map(r => <option key={r.id} value={r.id}>{r.nombre}</option>)}
-            </select>
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
+              <Shield size={16} className="text-[#F7941D]" />
+              Rol *
+            </label>
+            <RolCombobox
+              options={roles}
+              value={form.rolId}
+              onChange={(id) => setForm({ ...form, rolId: id })}
+              placeholder="Buscar rol..."
+            />
+            {errors.rolId && <p className="text-xs text-red-500 mt-1">{errors.rolId}</p>}
           </div>
-          <div className="flex gap-3 pt-2">
-            <button type="submit" disabled={saving} className="modal-btn-primary">
-              {saving ? 'Guardando...' : editingId ? 'Actualizar' : 'Crear'}
+
+          {/* Vista previa dinámica */}
+          {(form.nombres || form.apellidos || form.usuario) && (
+            <div className="mt-2 p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border border-orange-100">
+              <div className="flex items-center gap-2 text-xs font-medium text-orange-600 mb-2">
+                <Eye size={12} />
+                Vista previa
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
+                  <User size={10} className="text-[#F7941D]" />
+                  {form.nombres} {form.apellidos}
+                </span>
+                <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
+                  @{form.usuario || 'usuario'}
+                </span>
+                {form.correo && (
+                  <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
+                    <Mail size={10} className="text-[#F7941D]" />
+                    {form.correo}
+                  </span>
+                )}
+                {form.rolId !== 0 && (
+                  <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
+                    <Shield size={10} className="text-[#F7941D]" />
+                    {roles.find(r => r.id === form.rolId)?.nombre}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Botones de acción */}
+          <div className="flex gap-3 pt-4 border-t border-gray-100">
+            <button
+              type="submit"
+              disabled={saving}
+              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {saving ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                <>{editingId ? 'Actualizar usuario' : 'Crear usuario'}</>
+              )}
             </button>
-            <button type="button" onClick={() => setModalOpen(false)} className="modal-btn-cancel">Cancelar</button>
+            <button
+              type="button"
+              onClick={() => setModalOpen(false)}
+              className="px-5 py-2.5 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Cancelar
+            </button>
           </div>
+
         </form>
       </Modal>
     </div>
