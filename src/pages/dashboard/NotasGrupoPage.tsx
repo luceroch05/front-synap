@@ -6,8 +6,10 @@ export default function NotasGrupoPage() {
   const grupoId = Number(id);
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <RegistroNotasGrupales grupoId={grupoId} />
-    </main>
+    <div className="page-root">
+      <div className="page-body">
+        <RegistroNotasGrupales grupoId={grupoId} />
+      </div>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Plus, Search, BookOpen, Edit2, Trash2, Layers, ToggleLeft, ToggleRight } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import { ProgramasService, Programa, CreateProgramaDto } from '@/lib/services/programas.service';
@@ -72,144 +71,162 @@ export default function ProgramasPage() {
   );
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="page-root">
+      <div className="page-header">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Programas</h1>
-          <p className="text-sm text-gray-500 mt-1">{programas.length} programas registrados</p>
+          <h1 className="page-title">Programas</h1>
+          <p className="page-subtitle">{programas.length} programas registrados</p>
         </div>
-        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={abrirCrear}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg transition-shadow">
-          <Plus className="w-4 h-4" /> Nuevo Programa
-        </motion.button>
+        <button onClick={abrirCrear} className="btn-primary">
+          <Plus size={16} /> Nuevo Programa
+        </button>
       </div>
 
-      {error && <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">{error} <button onClick={() => setError('')} className="float-right font-bold">×</button></div>}
-
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por nombre o tipo..."
-          className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        {loading ? (
-          <div className="p-12 text-center">
-            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p className="text-gray-500 text-sm">Cargando...</p>
-          </div>
-        ) : filtrados.length === 0 ? (
-          <div className="p-12 text-center">
-            <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500">No hay programas. Crea el primero.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  {['Tipo', 'Nombre', 'Descripción', 'Horas', 'Evaluación', 'Estado', ''].map(h => (
-                    <th key={h} className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filtrados.map(p => (
-                  <motion.tr key={p.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <span className="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium">{p.tipoPrograma?.nombre || '—'}</span>
-                    </td>
-                    <td className="px-6 py-4 font-medium text-gray-900">{p.nombre}</td>
-                    <td className="px-6 py-4 text-gray-500 text-sm max-w-xs truncate">{p.descripcion || '—'}</td>
-                    <td className="px-6 py-4 text-gray-700 whitespace-nowrap">{p.horasAcademicas}h</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${p.tieneEvaluacion ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-400'}`}>
-                        {p.tieneEvaluacion ? `Sí (≥${p.notaMinimaAprobatoria})` : 'No'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${p.activo ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                        {p.activo ? 'Activo' : 'Inactivo'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => navigate(`/dashboard/programas/${p.id}/unidades`)}
-                          className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="Gestionar Unidades">
-                          <Layers className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => toggleActivo(p.id)} className="p-1.5 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">
-                          {p.activo ? <ToggleRight className="w-4 h-4 text-green-600" /> : <ToggleLeft className="w-4 h-4" />}
-                        </button>
-                        <button onClick={() => abrirEditar(p)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => eliminar(p.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
+      <div className="page-body">
+        {error && (
+          <div className="error-bar">
+            <span>{error}</span>
+            <button onClick={() => setError('')} className="font-bold text-lg leading-none">×</button>
           </div>
         )}
+
+        <div className="search-wrap">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            className="search-input"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Buscar por nombre o tipo..."
+          />
+        </div>
+
+        <div className="table-card">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <div className="spinner" />
+              <p className="text-sm text-gray-400">Cargando...</p>
+            </div>
+          ) : filtrados.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-2">
+              <BookOpen size={40} className="text-gray-200" />
+              <p className="text-sm text-gray-400">No hay programas</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead style={{ borderBottom: '1px solid #F0F2F5' }}>
+                  <tr style={{ backgroundColor: '#FAFAFA' }}>
+                    {['Tipo', 'Nombre', 'Descripción', 'Horas', 'Evaluación', 'Estado', ''].map(h => (
+                      <th key={h} className="table-header">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtrados.map(p => (
+                    <tr key={p.id} className="table-row">
+                      <td className="table-cell">
+                        <span className="badge-orange">{p.tipoPrograma?.nombre || '—'}</span>
+                      </td>
+                      <td className="table-cell font-medium text-gray-900">{p.nombre}</td>
+                      <td className="table-cell text-gray-500 text-sm max-w-xs truncate">{p.descripcion || '—'}</td>
+                      <td className="table-cell text-gray-700 whitespace-nowrap">{p.horasAcademicas}h</td>
+                      <td className="table-cell">
+                        <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${p.tieneEvaluacion ? 'bg-orange-50 text-orange-700' : 'bg-gray-100 text-gray-400'}`}>
+                          {p.tieneEvaluacion ? `Sí (≥${p.notaMinimaAprobatoria})` : 'No'}
+                        </span>
+                      </td>
+                      <td className="table-cell">
+                        <span className={p.activo ? 'badge-green' : 'badge-gray'}>
+                          {p.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </td>
+                      <td className="table-cell">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => navigate(`/dashboard/programas/${p.id}/unidades`)}
+                            className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors"
+                            title="Gestionar Unidades"
+                          >
+                            <Layers size={15} />
+                          </button>
+                          <button onClick={() => toggleActivo(p.id)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                            {p.activo
+                              ? <ToggleRight size={18} className="text-emerald-500" />
+                              : <ToggleLeft size={18} className="text-gray-300" />
+                            }
+                          </button>
+                          <button onClick={() => abrirEditar(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors">
+                            <Edit2 size={15} />
+                          </button>
+                          <button onClick={() => eliminar(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Editar Programa' : 'Nuevo Programa'}>
         <form onSubmit={guardar} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Programa *</label>
+            <label className="form-label">Tipo de Programa *</label>
             <select value={form.tipoProgramaId} onChange={e => setForm({ ...form, tipoProgramaId: Number(e.target.value) })}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" required>
+              className="form-input" required>
               <option value={0} disabled>Seleccionar tipo...</option>
               {tipos.map(t => <option key={t.id} value={t.id}>{t.nombre}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+            <label className="form-label">Nombre *</label>
             <input value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              placeholder="Nombre del programa" required />
+              className="form-input" placeholder="Nombre del programa" required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <label className="form-label">Descripción</label>
             <textarea value={form.descripcion} onChange={e => setForm({ ...form, descripcion: e.target.value })}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"
+              className="form-input resize-none"
               rows={3} placeholder="Descripción del programa..." />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Horas Académicas *</label>
+            <label className="form-label">Horas Académicas *</label>
             <input type="number" value={form.horasAcademicas} onChange={e => setForm({ ...form, horasAcademicas: Number(e.target.value) })}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" min={1} required />
+              className="form-input" min={1} required />
           </div>
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
             <div>
               <p className="text-sm font-medium text-gray-700">Tiene evaluación</p>
               <p className="text-xs text-gray-400">Habilita el registro de notas por unidades</p>
             </div>
-            <button type="button" onClick={() => setForm({ ...form, tieneEvaluacion: !form.tieneEvaluacion })}
-              className={`relative w-11 h-6 rounded-full transition-colors ${form.tieneEvaluacion ? 'bg-blue-600' : 'bg-gray-300'}`}>
-              <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${form.tieneEvaluacion ? 'translate-x-5' : 'translate-x-0'}`} />
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, tieneEvaluacion: !form.tieneEvaluacion })}
+              className="relative w-10 h-6 rounded-full transition-colors duration-200"
+              style={{ backgroundColor: form.tieneEvaluacion ? '#F7941D' : '#E5E7EB' }}
+            >
+              <span
+                className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-200"
+                style={{ transform: form.tieneEvaluacion ? 'translateX(16px)' : 'translateX(0)' }}
+              />
             </button>
           </div>
           {form.tieneEvaluacion && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nota mínima aprobatoria</label>
+              <label className="form-label">Nota mínima aprobatoria</label>
               <input type="number" value={form.notaMinimaAprobatoria} onChange={e => setForm({ ...form, notaMinimaAprobatoria: Number(e.target.value) })}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" min={0} max={20} step={0.5} />
+                className="form-input" min={0} max={20} step={0.5} />
             </div>
           )}
           <div className="flex gap-3 pt-2">
-            <button type="submit" disabled={saving}
-              className="flex-1 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:opacity-90 disabled:opacity-50">
-              {saving ? 'Guardando...' : editingId ? 'Actualizar' : 'Crear Programa'}
+            <button type="submit" disabled={saving} className="modal-btn-primary">
+              {saving ? 'Guardando...' : editingId ? 'Actualizar' : 'Crear'}
             </button>
-            <button type="button" onClick={() => setModalOpen(false)}
-              className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200">
-              Cancelar
-            </button>
+            <button type="button" onClick={() => setModalOpen(false)} className="modal-btn-cancel">Cancelar</button>
           </div>
         </form>
       </Modal>

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { ArrowLeft, Users, Calendar, MapPin, ClipboardList, Plus, Trash2 } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import { GruposProgramasService, GrupoProgramas } from '@/lib/services/grupos-programas.service';
@@ -105,8 +104,11 @@ export default function DetalleGrupoPage() {
   const fmtDate = (d: string) => { if (!d) return '—'; const [y, m, day] = d.split('T')[0].split('-').map(Number); return new Date(y, m - 1, day).toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' }); };
 
   if (loading) return (
-    <div className="p-6 flex items-center justify-center h-96">
-      <div className="text-center"><div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" /><p className="text-gray-500">Cargando...</p></div>
+    <div className="page-root flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="spinner" />
+        <p className="text-sm text-gray-400">Cargando...</p>
+      </div>
     </div>
   );
 
@@ -118,152 +120,167 @@ export default function DetalleGrupoPage() {
   ).length;
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Cabecera */}
-      <div className="flex items-center gap-4">
-        <button onClick={() => navigate('/dashboard/grupos')} className="p-2 text-gray-500 hover:bg-gray-100 rounded-xl transition-colors">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-900">{grupo.nombreGrupo}</h1>
-          <p className="text-sm text-gray-500">{grupo.programa?.nombre}</p>
+    <div className="page-root">
+      <div className="page-header">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate('/dashboard/grupos')} className="p-2 text-gray-500 hover:bg-gray-100 rounded-xl transition-colors">
+            <ArrowLeft size={18} />
+          </button>
+          <div>
+            <h1 className="page-title">{grupo.nombreGrupo}</h1>
+            <p className="page-subtitle">{grupo.programa?.nombre}</p>
+          </div>
         </div>
         <div className="flex gap-3">
-          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+          <button
             onClick={() => navigate(`/dashboard/grupos/${grupoId}/notas`)}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 shadow-sm">
-            <ClipboardList className="w-4 h-4" /> Registrar Notas
-          </motion.button>
-          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            onClick={generarCertificados} disabled={generando || aprobadas === 0}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg disabled:opacity-50 transition-shadow">
+            className="btn-secondary"
+          >
+            <ClipboardList size={16} /> Registrar Notas
+          </button>
+          <button
+            onClick={generarCertificados}
+            disabled={generando || aprobadas === 0}
+            className="btn-primary disabled:opacity-50"
+          >
             {generando ? 'Generando...' : `Generar Certificados (${aprobadas} aprobados)`}
-          </motion.button>
+          </button>
         </div>
       </div>
 
-      {error && <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">{error} <button onClick={() => setError('')} className="float-right font-bold">×</button></div>}
-
-      {/* Info del grupo */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { icon: MapPin, label: 'Modalidad', value: grupo.modalidad },
-          { icon: Calendar, label: 'Fecha Inicio', value: fmtDate(grupo.fechaInicio) },
-          { icon: Calendar, label: 'Fecha Fin', value: fmtDate(grupo.fechaFin) },
-          { icon: Users, label: 'Inscritos', value: String(inscripciones.length) },
-        ].map(info => (
-          <div key={info.label} className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
-            <div className="flex items-center gap-2 text-gray-500 mb-2">
-              <info.icon className="w-4 h-4" />
-              <span className="text-xs font-medium uppercase">{info.label}</span>
-            </div>
-            <p className="font-semibold text-gray-900">{info.value}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Tabla de inscripciones */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="font-semibold text-gray-900">Participantes inscritos</h2>
-          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            onClick={() => setModalInsc(true)}
-            className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-            <Plus className="w-3.5 h-3.5" /> Inscribir participante
-          </motion.button>
-        </div>
-        {inscripciones.length === 0 ? (
-          <div className="p-12 text-center"><Users className="w-12 h-12 text-gray-300 mx-auto mb-3" /><p className="text-gray-500">No hay participantes inscritos en este grupo.</p></div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  {['#', 'Participante', 'Documento', 'Fecha Inscripción', 'Estado', ''].map(h => (
-                    <th key={h} className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {inscripciones.map((i, idx) => {
-                  const p = i.participante;
-                  const nombre = p ? `${p.nombres} ${p.apellidos}` : `Inscripción #${i.id}`;
-                  const estNombre = i.estado?.nombre || '';
-                  const cambiando = cambiandoEstado === i.id;
-                  return (
-                    <motion.tr key={i.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 text-gray-400 text-sm">{idx + 1}</td>
-                      <td className="px-6 py-4 font-medium text-gray-900">{nombre}</td>
-                      <td className="px-6 py-4 text-sm text-gray-500">{p ? `${p.tipoDocumento}: ${p.numeroDocumento}` : '—'}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">{fmtDate(i.fechaInscripcion)}</td>
-                      <td className="px-6 py-4">
-                        {cambiando ? (
-                          <div className="flex items-center gap-2">
-                            <span className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                            <span className="text-xs text-gray-400">Cambiando...</span>
-                          </div>
-                        ) : (
-                          <select
-                            value={i.estadoId}
-                            onChange={e => cambiarEstado(i.id, Number(e.target.value))}
-                            className={`px-2.5 py-1 rounded-lg text-xs font-medium border cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 ${estadoColors[estNombre] || 'bg-gray-100 text-gray-600 border-gray-200'}`}
-                          >
-                            {estados.map(est => (
-                              <option key={est.id} value={est.id}>{est.nombre}</option>
-                            ))}
-                          </select>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <button
-                          onClick={() => eliminarInscripcion(i.id, nombre)}
-                          disabled={eliminando === i.id}
-                          className="p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors disabled:opacity-40"
-                          title="Eliminar inscripción"
-                        >
-                          {eliminando === i.id
-                            ? <span className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin block" />
-                            : <Trash2 className="w-4 h-4" />
-                          }
-                        </button>
-                      </td>
-                    </motion.tr>
-                  );
-                })}
-              </tbody>
-            </table>
+      <div className="page-body">
+        {error && (
+          <div className="error-bar">
+            <span>{error}</span>
+            <button onClick={() => setError('')} className="font-bold text-lg leading-none">×</button>
           </div>
         )}
+
+        {/* Info del grupo */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { icon: MapPin, label: 'Modalidad', value: grupo.modalidad },
+            { icon: Calendar, label: 'Fecha Inicio', value: fmtDate(grupo.fechaInicio) },
+            { icon: Calendar, label: 'Fecha Fin', value: fmtDate(grupo.fechaFin) },
+            { icon: Users, label: 'Inscritos', value: String(inscripciones.length) },
+          ].map(info => (
+            <div key={info.label} className="table-card p-4">
+              <div className="flex items-center gap-2 text-gray-400 mb-2">
+                <info.icon size={14} />
+                <span className="text-xs font-semibold uppercase tracking-wider">{info.label}</span>
+              </div>
+              <p className="font-semibold text-gray-900">{info.value}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Tabla de inscripciones */}
+        <div className="table-card">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <h2 className="font-semibold text-gray-900">Participantes inscritos</h2>
+            <button
+              onClick={() => setModalInsc(true)}
+              className="btn-primary text-sm px-3 py-1.5"
+            >
+              <Plus size={14} /> Inscribir participante
+            </button>
+          </div>
+          {inscripciones.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-2">
+              <Users size={40} className="text-gray-200" />
+              <p className="text-sm text-gray-400">No hay participantes inscritos en este grupo</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead style={{ borderBottom: '1px solid #F0F2F5' }}>
+                  <tr style={{ backgroundColor: '#FAFAFA' }}>
+                    {['#', 'Participante', 'Documento', 'Fecha Inscripción', 'Estado', ''].map(h => (
+                      <th key={h} className="table-header">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {inscripciones.map((i, idx) => {
+                    const p = i.participante;
+                    const nombre = p ? `${p.nombres} ${p.apellidos}` : `Inscripción #${i.id}`;
+                    const estNombre = i.estado?.nombre || '';
+                    const cambiando = cambiandoEstado === i.id;
+                    return (
+                      <tr key={i.id} className="table-row">
+                        <td className="table-cell text-gray-400 text-sm">{idx + 1}</td>
+                        <td className="table-cell font-medium text-gray-900">{nombre}</td>
+                        <td className="table-cell text-sm text-gray-500">{p ? `${p.tipoDocumento}: ${p.numeroDocumento}` : '—'}</td>
+                        <td className="table-cell text-sm text-gray-600 whitespace-nowrap">{fmtDate(i.fechaInscripcion)}</td>
+                        <td className="table-cell">
+                          {cambiando ? (
+                            <div className="flex items-center gap-2">
+                              <span className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#F7941D transparent transparent transparent' }} />
+                              <span className="text-xs text-gray-400">Cambiando...</span>
+                            </div>
+                          ) : (
+                            <select
+                              value={i.estadoId}
+                              onChange={e => cambiarEstado(i.id, Number(e.target.value))}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-medium border cursor-pointer outline-none ${estadoColors[estNombre] || 'bg-gray-100 text-gray-600 border-gray-200'}`}
+                            >
+                              {estados.map(est => (
+                                <option key={est.id} value={est.id}>{est.nombre}</option>
+                              ))}
+                            </select>
+                          )}
+                        </td>
+                        <td className="table-cell">
+                          <button
+                            onClick={() => eliminarInscripcion(i.id, nombre)}
+                            disabled={eliminando === i.id}
+                            className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-40"
+                            title="Eliminar inscripción"
+                          >
+                            {eliminando === i.id
+                              ? <span className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin block" />
+                              : <Trash2 size={15} />
+                            }
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Modal inscribir */}
       <Modal isOpen={modalInsc} onClose={() => setModalInsc(false)} title="Inscribir Participante" size="sm">
         <form onSubmit={inscribir} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Participante *</label>
+            <label className="form-label">Participante *</label>
             <select value={formInsc.participanteId} onChange={e => setFormInsc({ ...formInsc, participanteId: Number(e.target.value) })}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" required>
+              className="form-input" required>
               <option value={0} disabled>Seleccionar...</option>
               {participantes.map(p => <option key={p.id} value={p.id}>{p.nombres} {p.apellidos} — {p.numeroDocumento}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Estado inicial</label>
+            <label className="form-label">Estado inicial</label>
             <select value={formInsc.estadoId} onChange={e => setFormInsc({ ...formInsc, estadoId: Number(e.target.value) })}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+              className="form-input">
               {estados.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de inscripción</label>
+            <label className="form-label">Fecha de inscripción</label>
             <input type="date" value={formInsc.fechaInscripcion} onChange={e => setFormInsc({ ...formInsc, fechaInscripcion: e.target.value })}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+              className="form-input" />
           </div>
           <div className="flex gap-3 pt-1">
-            <button type="submit" disabled={saving} className="flex-1 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:opacity-90 disabled:opacity-50">
+            <button type="submit" disabled={saving} className="modal-btn-primary">
               {saving ? 'Guardando...' : 'Inscribir'}
             </button>
-            <button type="button" onClick={() => setModalInsc(false)} className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200">Cancelar</button>
+            <button type="button" onClick={() => setModalInsc(false)} className="modal-btn-cancel">Cancelar</button>
           </div>
         </form>
       </Modal>
@@ -294,8 +311,10 @@ export default function DetalleGrupoPage() {
                 </div>
               </div>
             )}
-            <button onClick={() => { setModalGenerar(false); if (resultadoGen.exitosos > 0) navigate('/dashboard/certificados'); }}
-              className="w-full py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:opacity-90">
+            <button
+              onClick={() => { setModalGenerar(false); if (resultadoGen.exitosos > 0) navigate('/dashboard/certificados'); }}
+              className="modal-btn-primary w-full"
+            >
               {resultadoGen.exitosos > 0 ? 'Ver Certificados' : 'Cerrar'}
             </button>
           </div>

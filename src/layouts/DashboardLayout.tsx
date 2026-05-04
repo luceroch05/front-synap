@@ -7,11 +7,11 @@ export default function DashboardLayout() {
   const usuario = usuarioStr ? JSON.parse(usuarioStr) : undefined
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen overflow-hidden" style={{ backgroundColor: '#F0F2F5' }}>
       <Sidebar usuario={usuario} />
-      <div className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-y-auto">
         <Outlet />
-      </div>
+      </main>
     </div>
   )
 }

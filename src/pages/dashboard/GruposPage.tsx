@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Plus, Search, Users, Edit2, Trash2, Eye, ToggleLeft, ToggleRight } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import { GruposProgramasService, GrupoProgramas, CreateGrupoProgramaDto, ModalidadGrupo } from '@/lib/services/grupos-programas.service';
 import { ProgramasService, Programa } from '@/lib/services/programas.service';
 
 const emptyForm: CreateGrupoProgramaDto = { programaId: 0, nombreGrupo: '', fechaInicio: '', fechaFin: '', modalidad: ModalidadGrupo.PRESENCIAL };
-const modalBadge: Record<string, string> = { PRESENCIAL: 'bg-blue-100 text-blue-700', VIRTUAL: 'bg-purple-100 text-purple-700', MIXTA: 'bg-orange-100 text-orange-700' };
+const modalBadge: Record<string, string> = {
+  PRESENCIAL: 'bg-orange-50 text-orange-700',
+  VIRTUAL: 'bg-purple-100 text-purple-700',
+  MIXTA: 'bg-blue-100 text-blue-700',
+};
 
 export default function GruposPage() {
   const navigate = useNavigate();
@@ -67,93 +70,129 @@ export default function GruposPage() {
   const fmtDate = (d: string) => { if (!d) return '—'; const [y, m, day] = d.split('T')[0].split('-').map(Number); return new Date(y, m - 1, day).toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' }); };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="page-root">
+      <div className="page-header">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Grupos de Programas</h1>
-          <p className="text-sm text-gray-500 mt-1">{grupos.length} grupos registrados</p>
+          <h1 className="page-title">Grupos de Programas</h1>
+          <p className="page-subtitle">{grupos.length} grupos registrados</p>
         </div>
-        <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={abrirCrear}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium shadow-md hover:shadow-lg transition-shadow">
-          <Plus className="w-4 h-4" /> Nuevo Grupo
-        </motion.button>
+        <button onClick={abrirCrear} className="btn-primary">
+          <Plus size={16} /> Nuevo Grupo
+        </button>
       </div>
 
-      {error && <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">{error} <button onClick={() => setError('')} className="float-right font-bold">×</button></div>}
-
-      <div className="flex gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar grupo o programa..."
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
-        </div>
-        <select value={filtroPrograma} onChange={e => setFiltroPrograma(Number(e.target.value))}
-          className="px-3 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-          <option value={0}>Todos los programas</option>
-          {programas.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
-        </select>
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        {loading ? (
-          <div className="p-12 text-center"><div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" /><p className="text-gray-500 text-sm">Cargando...</p></div>
-        ) : filtrados.length === 0 ? (
-          <div className="p-12 text-center"><Users className="w-12 h-12 text-gray-300 mx-auto mb-3" /><p className="text-gray-500">No hay grupos. Crea el primero.</p></div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  {['Programa', 'Grupo', 'Modalidad', 'Inicio', 'Fin', 'Estado', ''].map(h => (
-                    <th key={h} className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filtrados.map(g => (
-                  <motion.tr key={g.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 text-sm text-gray-600 max-w-[150px] truncate">{g.programa?.nombre || '—'}</td>
-                    <td className="px-6 py-4 font-medium text-gray-900">{g.nombreGrupo}</td>
-                    <td className="px-6 py-4"><span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${modalBadge[g.modalidad] || 'bg-gray-100 text-gray-700'}`}>{g.modalidad}</span></td>
-                    <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">{fmtDate(g.fechaInicio)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">{fmtDate(g.fechaFin)}</td>
-                    <td className="px-6 py-4"><span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${g.activo ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{g.activo ? 'Activo' : 'Inactivo'}</span></td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-1">
-                        <button onClick={() => navigate(`/dashboard/grupos/${g.id}`)} className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg" title="Ver detalle"><Eye className="w-4 h-4" /></button>
-                        <button onClick={() => toggleActivo(g.id)} className="p-1.5 text-gray-500 hover:bg-gray-100 rounded-lg">{g.activo ? <ToggleRight className="w-4 h-4 text-green-600" /> : <ToggleLeft className="w-4 h-4" />}</button>
-                        <button onClick={() => abrirEditar(g)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"><Edit2 className="w-4 h-4" /></button>
-                        <button onClick={() => eliminar(g.id)} className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
+      <div className="page-body">
+        {error && (
+          <div className="error-bar">
+            <span>{error}</span>
+            <button onClick={() => setError('')} className="font-bold text-lg leading-none">×</button>
           </div>
         )}
+
+        <div className="flex gap-3">
+          <div className="search-wrap flex-1">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              className="search-input"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Buscar grupo o programa..."
+            />
+          </div>
+          <select
+            value={filtroPrograma}
+            onChange={e => setFiltroPrograma(Number(e.target.value))}
+            className="px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm outline-none transition-all"
+            style={{ borderColor: undefined }}
+          >
+            <option value={0}>Todos los programas</option>
+            {programas.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
+          </select>
+        </div>
+
+        <div className="table-card">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <div className="spinner" />
+              <p className="text-sm text-gray-400">Cargando...</p>
+            </div>
+          ) : filtrados.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 gap-2">
+              <Users size={40} className="text-gray-200" />
+              <p className="text-sm text-gray-400">No hay registros</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead style={{ borderBottom: '1px solid #F0F2F5' }}>
+                  <tr style={{ backgroundColor: '#FAFAFA' }}>
+                    {['Programa', 'Grupo', 'Modalidad', 'Inicio', 'Fin', 'Estado', ''].map(h => (
+                      <th key={h} className="table-header">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtrados.map(g => (
+                    <tr key={g.id} className="table-row">
+                      <td className="table-cell text-sm text-gray-600 max-w-[150px] truncate">{g.programa?.nombre || '—'}</td>
+                      <td className="table-cell font-medium text-gray-900">{g.nombreGrupo}</td>
+                      <td className="table-cell">
+                        <span className={`px-2.5 py-1 rounded-lg text-xs font-medium ${modalBadge[g.modalidad] || 'bg-gray-100 text-gray-700'}`}>{g.modalidad}</span>
+                      </td>
+                      <td className="table-cell text-sm text-gray-600 whitespace-nowrap">{fmtDate(g.fechaInicio)}</td>
+                      <td className="table-cell text-sm text-gray-600 whitespace-nowrap">{fmtDate(g.fechaFin)}</td>
+                      <td className="table-cell">
+                        <span className={g.activo ? 'badge-green' : 'badge-gray'}>
+                          {g.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </td>
+                      <td className="table-cell">
+                        <div className="flex items-center justify-end gap-1">
+                          <button onClick={() => navigate(`/dashboard/grupos/${g.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors" title="Ver detalle">
+                            <Eye size={15} />
+                          </button>
+                          <button onClick={() => toggleActivo(g.id)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                            {g.activo
+                              ? <ToggleRight size={18} className="text-emerald-500" />
+                              : <ToggleLeft size={18} className="text-gray-300" />
+                            }
+                          </button>
+                          <button onClick={() => abrirEditar(g)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors">
+                            <Edit2 size={15} />
+                          </button>
+                          <button onClick={() => eliminar(g.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editingId ? 'Editar Grupo' : 'Nuevo Grupo'}>
         <form onSubmit={guardar} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Programa *</label>
+            <label className="form-label">Programa *</label>
             <select value={form.programaId} onChange={e => setForm({ ...form, programaId: Number(e.target.value) })}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" required>
+              className="form-input" required>
               <option value={0} disabled>Seleccionar programa...</option>
               {programas.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Grupo *</label>
+            <label className="form-label">Nombre del Grupo *</label>
             <input value={form.nombreGrupo} onChange={e => setForm({ ...form, nombreGrupo: e.target.value })}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-              placeholder="Ej: Grupo A - Turno Noche" required />
+              className="form-input" placeholder="Ej: Grupo A - Turno Noche" required />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Modalidad *</label>
+            <label className="form-label">Modalidad *</label>
             <select value={form.modalidad} onChange={e => setForm({ ...form, modalidad: e.target.value as ModalidadGrupo })}
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+              className="form-input">
               <option value="PRESENCIAL">Presencial</option>
               <option value="VIRTUAL">Virtual</option>
               <option value="MIXTA">Mixta</option>
@@ -161,21 +200,21 @@ export default function GruposPage() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio *</label>
+              <label className="form-label">Fecha Inicio *</label>
               <input type="date" value={form.fechaInicio} onChange={e => setForm({ ...form, fechaInicio: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" required />
+                className="form-input" required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Fin *</label>
+              <label className="form-label">Fecha Fin *</label>
               <input type="date" value={form.fechaFin} onChange={e => setForm({ ...form, fechaFin: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" required />
+                className="form-input" required />
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="submit" disabled={saving} className="flex-1 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium hover:opacity-90 disabled:opacity-50">
-              {saving ? 'Guardando...' : editingId ? 'Actualizar' : 'Crear Grupo'}
+            <button type="submit" disabled={saving} className="modal-btn-primary">
+              {saving ? 'Guardando...' : editingId ? 'Actualizar' : 'Crear'}
             </button>
-            <button type="button" onClick={() => setModalOpen(false)} className="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200">Cancelar</button>
+            <button type="button" onClick={() => setModalOpen(false)} className="modal-btn-cancel">Cancelar</button>
           </div>
         </form>
       </Modal>

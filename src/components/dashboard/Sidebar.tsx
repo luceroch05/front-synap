@@ -1,265 +1,290 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-  LayoutDashboard,
-  Users,
-  FileText,
-  Award,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  LogOut,
-  UserCog,
-  FolderKanban,
-  Shield,
+  LayoutDashboard, Users, FileText, Award, Settings,
+  ChevronLeft, ChevronRight, LogOut, UserCog, FolderKanban, Shield,
 } from 'lucide-react';
-import { clsx } from 'clsx';
 
-/**
- * Sidebar Moderno Minimalista
- * Con animaciones suaves estilo Pinterest
- */
+const EXPANDED = 256;
+const COLLAPSED = 80;
+const EASE = 'cubic-bezier(0.4,0,0.2,1)';
+const DUR = '0.25s';
 
-interface MenuItem {
-  icon: React.ElementType;
-  label: string;
-  href: string;
-  badge?: number;
-}
-
-interface MenuSection {
-  title: string;
-  items: MenuItem[];
-}
-
-const menuSections: MenuSection[] = [
+const sections = [
   {
-    title: 'Principal',
+    label: 'Principal',
+    items: [{ icon: LayoutDashboard, label: 'Dashboard', to: '/dashboard' }],
+  },
+  {
+    label: 'Gestión',
     items: [
-      { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
+      { icon: FolderKanban, label: 'Programas',      to: '/dashboard/programas'    },
+      { icon: Users,        label: 'Grupos',          to: '/dashboard/grupos'       },
+      { icon: Users,        label: 'Participantes',   to: '/dashboard/participantes'},
+      { icon: FileText,     label: 'Inscripciones',   to: '/dashboard/inscripciones'},
+      { icon: Award,        label: 'Certificados',    to: '/dashboard/certificados' },
+      { icon: Shield,       label: 'Validar Cert.',   to: '/validar-certificado'    },
     ],
   },
   {
-    title: 'Gestión',
+    label: 'Admin',
     items: [
-      { icon: FolderKanban, label: 'Programas', href: '/dashboard/programas' },
-      { icon: Users, label: 'Grupos', href: '/dashboard/grupos' },
-      { icon: Users, label: 'Participantes', href: '/dashboard/participantes' },
-      { icon: FileText, label: 'Inscripciones', href: '/dashboard/inscripciones' },
-      { icon: Award, label: 'Certificados', href: '/dashboard/certificados' },
-      { icon: Shield, label: 'Validar Certificado', href: '/validar-certificado' },
-    ],
-  },
-  {
-    title: 'Administración',
-    items: [
-      { icon: UserCog, label: 'Usuarios', href: '/dashboard/usuarios' },
-      { icon: Settings, label: 'Config. Certificados', href: '/dashboard/configuracion-certificados' },
-{ icon: FileText, label: 'Estados Inscripción', href: '/dashboard/estados-inscripcion' },
+      { icon: UserCog,  label: 'Usuarios',       to: '/dashboard/usuarios'                      },
+      { icon: Settings, label: 'Config. Certs.', to: '/dashboard/configuracion-certificados'    },
+      { icon: FileText, label: 'Estados',         to: '/dashboard/estados-inscripcion'           },
     ],
   },
 ];
 
 interface SidebarProps {
-  usuario?: {
-    nombres: string;
-    apellidos: string;
-    rolId: number;
-  };
+  usuario?: { nombres: string; apellidos: string; rolId: number };
 }
 
 export default function Sidebar({ usuario }: SidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const location = useLocation();
+  const [collapsed, setCollapsed] = useState(false);
+  const { pathname } = useLocation();
   const navigate = useNavigate();
-  const pathname = location.pathname;
 
-  const handleLogout = () => {
+  const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
     navigate('/login');
   };
 
   return (
-    <motion.aside
-      initial={false}
-      animate={{
-        width: isCollapsed ? '80px' : '280px',
+    <aside
+      style={{
+        width: collapsed ? COLLAPSED : EXPANDED,
+        minWidth: collapsed ? COLLAPSED : EXPANDED,
+        transition: `width ${DUR} ${EASE}, min-width ${DUR} ${EASE}`,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        flexShrink: 0,
+        overflow: 'hidden',
+        background: '#0D1F35',
+        borderRight: '1px solid rgba(255,255,255,0.07)',
       }}
-      transition={{
-        duration: 0.3,
-        ease: [0.4, 0, 0.2, 1],
-      }}
-      className="relative h-screen bg-white border-r border-gray-200 flex flex-col"
     >
-      {/* Header con Logo */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
-        <AnimatePresence mode="wait">
-          {!isCollapsed && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-center gap-3"
-            >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">S</span>
-              </div>
-              <div>
-                <h1 className="font-bold text-gray-900 text-sm">SYNAP</h1>
-                <p className="text-[10px] text-gray-500">Sistema de Certificados</p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* ── CABECERA ── */}
+      <div
+        style={{
+          height: 64,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 10px',
+          flexShrink: 0,
+          borderBottom: '1px solid rgba(255,255,255,0.07)',
+        }}
+      >
+        {/* Icono + nombre */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, overflow: 'hidden' }}>
+          <div
+            style={{
+              width: 34, height: 34, borderRadius: 10, flexShrink: 0,
+              background: 'linear-gradient(135deg, #FFA733, #F7941D, #E07B15)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <span style={{ color: '#fff', fontWeight: 900, fontSize: 14, userSelect: 'none' }}>S</span>
+          </div>
 
-        {/* Toggle Button */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className={clsx(
-            'p-1.5 rounded-lg hover:bg-gray-100 transition-colors',
-            isCollapsed && 'mx-auto'
-          )}
-        >
-          {isCollapsed ? (
-            <ChevronRight className="w-4 h-4 text-gray-600" />
-          ) : (
-            <ChevronLeft className="w-4 h-4 text-gray-600" />
-          )}
-        </motion.button>
-      </div>
-
-      {/* User Info */}
-      {usuario && (
-        <div className="p-4 border-b border-gray-200">
-          <div className={clsx('flex items-center gap-3', isCollapsed && 'justify-center')}>
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-semibold text-sm">
-                {usuario.nombres[0]}{usuario.apellidos[0]}
-              </span>
-            </div>
-            <AnimatePresence mode="wait">
-              {!isCollapsed && (
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex-1 min-w-0"
-                >
-                  <p className="font-semibold text-sm text-gray-900 truncate">
-                    {usuario.nombres}
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">
-                    {usuario.rolId === 1 ? 'Administrador' : 'Admisión'}
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+          {/* Texto que desaparece */}
+          <div
+            style={{
+              overflow: 'hidden',
+              maxWidth: collapsed ? 0 : 160,
+              opacity: collapsed ? 0 : 1,
+              transition: `max-width ${DUR} ${EASE}, opacity 0.18s ease`,
+            }}
+          >
+            <p style={{ color: '#fff', fontWeight: 800, fontSize: 13, whiteSpace: 'nowrap', lineHeight: 1, letterSpacing: '0.04em' }}>
+              SYNAP
+            </p>
+            <p style={{ color: '#4A6A8A', fontSize: 9, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', marginTop: 3, whiteSpace: 'nowrap' }}>
+              Neurodesarrollo
+            </p>
           </div>
         </div>
-      )}
 
-      {/* Navigation Menu */}
-      <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-6">
-        {menuSections.map((section, sectionIndex) => (
-          <div key={sectionIndex}>
-            <AnimatePresence mode="wait">
-              {!isCollapsed && (
-                <motion.p
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.2 }}
-                  className="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider"
-                >
-                  {section.title}
-                </motion.p>
-              )}
-            </AnimatePresence>
+        {/* Botón toggle — siempre visible porque está dentro del espacio de 80px */}
+        <ToggleBtn collapsed={collapsed} onClick={() => setCollapsed(c => !c)} />
+      </div>
 
-            <div className="space-y-1">
-              {section.items.map((item, itemIndex) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.href;
-
-                return (
-                  <motion.button
-                    key={itemIndex}
-                    onClick={() => navigate(item.href)}
-                    whileHover={{ x: isCollapsed ? 0 : 4 }}
-                    whileTap={{ scale: 0.98 }}
-                    transition={{ duration: 0.2 }}
-                    className={clsx(
-                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200',
-                      isActive
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md'
-                        : 'text-gray-700 hover:bg-gray-100',
-                      isCollapsed && 'justify-center'
-                    )}
-                  >
-                    <Icon className="w-5 h-5 flex-shrink-0" />
-                    <AnimatePresence mode="wait">
-                      {!isCollapsed && (
-                        <motion.span
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -20 }}
-                          transition={{ duration: 0.2 }}
-                          className="font-medium text-sm truncate"
-                        >
-                          {item.label}
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                    {item.badge && !isCollapsed && (
-                      <motion.span
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="ml-auto bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full"
-                      >
-                        {item.badge}
-                      </motion.span>
-                    )}
-                  </motion.button>
-                );
-              })}
+      {/* ── NAVEGACIÓN ── */}
+      <nav
+        className="hide-scrollbar"
+        style={{ flex: 1, overflowY: 'auto', padding: '14px 8px' }}
+      >
+        {sections.map(section => (
+          <div key={section.label} style={{ marginBottom: 18 }}>
+            {/* Label de sección */}
+            <div
+              style={{
+                overflow: 'hidden',
+                maxHeight: collapsed ? 0 : 22,
+                opacity: collapsed ? 0 : 1,
+                marginBottom: collapsed ? 0 : 4,
+                transition: `max-height ${DUR} ${EASE}, opacity 0.18s ease, margin ${DUR} ${EASE}`,
+              }}
+            >
+              <p style={{
+                padding: '0 10px',
+                fontSize: 9, fontWeight: 700,
+                letterSpacing: '0.18em', textTransform: 'uppercase',
+                color: '#F7941D', opacity: 0.7, whiteSpace: 'nowrap',
+              }}>
+                {section.label}
+              </p>
             </div>
+
+            {section.items.map(item => (
+              <NavItem
+                key={item.to}
+                icon={<item.icon size={17} />}
+                label={item.label}
+                active={pathname === item.to}
+                collapsed={collapsed}
+                onClick={() => navigate(item.to)}
+              />
+            ))}
           </div>
         ))}
       </nav>
 
-      {/* Logout Button */}
-      <div className="p-4 border-t border-gray-200">
-        <motion.button
-          onClick={handleLogout}
-          whileHover={{ x: isCollapsed ? 0 : 4 }}
-          whileTap={{ scale: 0.98 }}
-          className={clsx(
-            'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-all duration-200',
-            isCollapsed && 'justify-center'
-          )}
-        >
-          <LogOut className="w-5 h-5 flex-shrink-0" />
-          <AnimatePresence mode="wait">
-            {!isCollapsed && (
-              <motion.span
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2 }}
-                className="font-medium text-sm"
-              >
-                Cerrar Sesión
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </motion.button>
+      {/* ── FOOTER ── */}
+      <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', padding: '8px 8px 10px' }}>
+        {/* Info usuario */}
+        {usuario && (
+          <div
+            style={{
+              overflow: 'hidden',
+              maxHeight: collapsed ? 0 : 56,
+              opacity: collapsed ? 0 : 1,
+              transition: `max-height ${DUR} ${EASE}, opacity 0.18s ease`,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px' }}>
+              <div style={{
+                width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+                background: 'linear-gradient(135deg, #F7941D, #E07B15)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: '#fff', fontSize: 11, fontWeight: 700,
+              }}>
+                {usuario.nombres[0]}{usuario.apellidos[0]}
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ color: '#fff', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {usuario.nombres} {usuario.apellidos}
+                </p>
+                <p style={{ color: '#4A6A8A', fontSize: 10, whiteSpace: 'nowrap' }}>
+                  {usuario.rolId === 1 ? 'Administrador' : 'Admisión'}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <NavItem
+          icon={<LogOut size={17} />}
+          label="Cerrar sesión"
+          active={false}
+          collapsed={collapsed}
+          onClick={logout}
+          danger
+        />
       </div>
-    </motion.aside>
+    </aside>
+  );
+}
+
+/* ─── Botón de toggle ─── */
+function ToggleBtn({ collapsed, onClick }: { collapsed: boolean; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        flexShrink: 0,
+        width: 28, height: 28, borderRadius: 8, border: 'none', cursor: 'pointer',
+        background: hovered ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.06)',
+        color: hovered ? '#fff' : '#5A7A9F',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transition: 'background 0.15s, color 0.15s',
+      }}
+    >
+      {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+    </button>
+  );
+}
+
+/* ─── Item de navegación ─── */
+function NavItem({
+  icon, label, active, collapsed, onClick, danger = false,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  active: boolean;
+  collapsed: boolean;
+  onClick: () => void;
+  danger?: boolean;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  const bg = active
+    ? 'rgba(247,148,29,0.13)'
+    : hovered
+    ? (danger ? 'rgba(239,68,68,0.08)' : 'rgba(255,255,255,0.06)')
+    : 'transparent';
+
+  const color = danger
+    ? (hovered ? '#F87171' : '#5A7A9F')
+    : active ? '#F7941D'
+    : (hovered ? '#fff' : '#7A9ABF');
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      title={collapsed ? label : undefined}
+      style={{
+        width: '100%', border: 'none', cursor: 'pointer',
+        display: 'flex', alignItems: 'center',
+        justifyContent: collapsed ? 'center' : 'flex-start',
+        gap: 10,
+        padding: '9px 10px',
+        borderRadius: 10,
+        marginBottom: 2,
+        background: bg,
+        color,
+        position: 'relative',
+        transition: 'background 0.15s, color 0.15s',
+      }}
+    >
+      {/* Indicador activo */}
+      {active && (
+        <span style={{
+          position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)',
+          width: 3, height: 20, borderRadius: '0 3px 3px 0', background: '#F7941D',
+        }} />
+      )}
+
+      <span style={{ flexShrink: 0, display: 'flex' }}>{icon}</span>
+
+      {/* Label */}
+      <span style={{
+        fontSize: 13, fontWeight: 500, whiteSpace: 'nowrap',
+        overflow: 'hidden', textAlign: 'left',
+        maxWidth: collapsed ? 0 : 150,
+        opacity: collapsed ? 0 : 1,
+        transition: `max-width ${DUR} ${EASE}, opacity 0.18s ease`,
+      }}>
+        {label}
+      </span>
+    </button>
   );
 }
