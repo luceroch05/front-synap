@@ -31,6 +31,7 @@ export default function ParticipantesPage() {
   const [form, setForm] = useState<CreateParticipanteDto>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [modalError, setModalError] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => { cargar(); }, []);
@@ -46,24 +47,26 @@ export default function ParticipantesPage() {
     }
   };
 
-  const abrirCrear = () => { 
-    setForm({ ...emptyForm, tipoDocumento: 'DNI' }); 
-    setEditingId(null); 
+  const abrirCrear = () => {
+    setForm({ ...emptyForm, tipoDocumento: 'DNI' });
+    setEditingId(null);
     setErrors({});
-    setModalOpen(true); 
+    setModalError('');
+    setModalOpen(true);
   };
 
   const abrirEditar = (p: Participante) => {
-    setForm({ 
-      tipoDocumento: p.tipoDocumento, 
-      numeroDocumento: p.numeroDocumento, 
-      nombres: p.nombres, 
-      apellidos: p.apellidos, 
-      email: p.email || '', 
-      telefono: p.telefono || '' 
+    setForm({
+      tipoDocumento: p.tipoDocumento,
+      numeroDocumento: p.numeroDocumento,
+      nombres: p.nombres,
+      apellidos: p.apellidos,
+      email: p.email || '',
+      telefono: p.telefono || ''
     });
-    setEditingId(p.id); 
+    setEditingId(p.id);
     setErrors({});
+    setModalError('');
     setModalOpen(true);
   };
 
@@ -85,18 +88,24 @@ export default function ParticipantesPage() {
   const guardar = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
-    
+
     setSaving(true);
+    setModalError('');
     try {
-      editingId 
-        ? await ParticipantesService.update(editingId, form) 
+      editingId
+        ? await ParticipantesService.update(editingId, form)
         : await ParticipantesService.create(form);
-      setModalOpen(false); 
+      setModalOpen(false);
       await cargar();
-    } catch (e: any) { 
-      setError(e.message); 
-    } finally { 
-      setSaving(false); 
+    } catch (e: any) {
+      const msg: string = Array.isArray(e.message) ? e.message.join(', ') : e.message;
+      if (msg.toLowerCase().includes('document') || msg.toLowerCase().includes('exist') || msg.toLowerCase().includes('conflict') || msg.toLowerCase().includes('duplica')) {
+        setErrors(prev => ({ ...prev, numeroDocumento: 'Ya existe un participante con este número de documento' }));
+      } else {
+        setModalError(msg || 'Ocurrió un error al guardar');
+      }
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -398,6 +407,15 @@ export default function ParticipantesPage() {
                   </span>
                 )}
               </div>
+            </div>
+          )}
+
+          {/* Error del servidor dentro del modal */}
+          {modalError && (
+            <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+              <span className="shrink-0 mt-0.5">⚠</span>
+              <span className="flex-1">{modalError}</span>
+              <button type="button" onClick={() => setModalError('')} className="shrink-0 font-bold text-red-400 hover:text-red-600 leading-none">×</button>
             </div>
           )}
 

@@ -52,41 +52,29 @@ const getAuthHeaders = () => {
 
 export const ParticipantesService = {
   async findAll(): Promise<Participante[]> {
-    const res = await fetch(`${API_URL}/participantes`, {
-      headers: getAuthHeaders(),
-    });
-
+    const res = await fetch(`${API_URL}/participantes`, { headers: getAuthHeaders() });
     if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.message || 'Error al obtener participantes');
+      const body = await res.json().catch(() => ({}));
+      throw new Error(Array.isArray(body.message) ? body.message.join(', ') : body.message || 'Error al obtener participantes');
     }
-
     return res.json();
   },
 
   async findAllActive(): Promise<Participante[]> {
-    const res = await fetch(`${API_URL}/participantes/activos`, {
-      headers: getAuthHeaders(),
-    });
-
+    const res = await fetch(`${API_URL}/participantes/activos`, { headers: getAuthHeaders() });
     if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.message || 'Error al obtener participantes activos');
+      const body = await res.json().catch(() => ({}));
+      throw new Error(Array.isArray(body.message) ? body.message.join(', ') : body.message || 'Error al obtener participantes activos');
     }
-
     return res.json();
   },
 
   async findOne(id: number): Promise<Participante> {
-    const res = await fetch(`${API_URL}/participantes/${id}`, {
-      headers: getAuthHeaders(),
-    });
-
+    const res = await fetch(`${API_URL}/participantes/${id}`, { headers: getAuthHeaders() });
     if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.message || `Error al obtener participante ${id}`);
+      const body = await res.json().catch(() => ({}));
+      throw new Error(Array.isArray(body.message) ? body.message.join(', ') : body.message || `Error al obtener participante ${id}`);
     }
-
     return res.json();
   },
 
@@ -98,8 +86,10 @@ export const ParticipantesService = {
     });
 
     if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.message || 'Error al crear participante');
+      const body = await res.json().catch(() => ({}));
+      const msg = Array.isArray(body.message) ? body.message.join(', ') : body.message;
+      if (res.status === 409) throw new Error(msg || 'Ya existe un participante con ese número de documento');
+      throw new Error(msg || 'Error al crear participante');
     }
 
     return res.json();
@@ -113,36 +103,29 @@ export const ParticipantesService = {
     });
 
     if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.message || `Error al actualizar participante ${id}`);
+      const body = await res.json().catch(() => ({}));
+      const msg = Array.isArray(body.message) ? body.message.join(', ') : body.message;
+      if (res.status === 409) throw new Error(msg || 'Ya existe un participante con ese número de documento');
+      throw new Error(msg || `Error al actualizar participante ${id}`);
     }
 
     return res.json();
   },
 
   async toggleActive(id: number): Promise<Participante> {
-    const res = await fetch(`${API_URL}/participantes/${id}/toggle`, {
-      method: 'PATCH',
-      headers: getAuthHeaders(),
-    });
-
+    const res = await fetch(`${API_URL}/participantes/${id}/toggle`, { method: 'PATCH', headers: getAuthHeaders() });
     if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.message || `Error al cambiar estado`);
+      const body = await res.json().catch(() => ({}));
+      throw new Error(Array.isArray(body.message) ? body.message.join(', ') : body.message || 'Error al cambiar estado');
     }
-
     return res.json();
   },
 
   async remove(id: number): Promise<void> {
-    const res = await fetch(`${API_URL}/participantes/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders(),
-    });
-
+    const res = await fetch(`${API_URL}/participantes/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
     if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.message || `Error al eliminar participante ${id}`);
+      const body = await res.json().catch(() => ({}));
+      throw new Error(Array.isArray(body.message) ? body.message.join(', ') : body.message || `Error al eliminar participante ${id}`);
     }
   },
 };

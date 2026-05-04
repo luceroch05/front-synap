@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Plus, Search, FileText, Trash2, ClipboardList, Users, Calendar, 
-  Eye, CheckCircle, X, User, BookOpen, Layers, Clock, Award
+import {
+  Plus, Search, FileText, Trash2, ClipboardList, Users, Calendar,
+  Eye, CheckCircle, User, BookOpen, Layers, Award
 } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
+import Combobox from '@/components/ui/Combobox';
 import { InscripcionesService, Inscripcion, CreateInscripcionDto } from '@/lib/services/inscripciones.service';
 import { ParticipantesService, Participante } from '@/lib/services/participantes.service';
 import { GruposProgramasService, GrupoProgramas } from '@/lib/services/grupos-programas.service';
@@ -23,225 +24,6 @@ const estadoColors: Record<string, string> = {
   Retirado: 'bg-red-50 text-red-700',
   Egresado: 'bg-purple-50 text-purple-700',
 };
-
-// COMPONENTE COMBOBOX PARA PARTICIPANTES
-function ParticipanteCombobox({ options, value, onChange, placeholder = "Buscar participante..." }: { 
-  options: Participante[]; 
-  value: number; 
-  onChange: (id: number) => void; 
-  placeholder?: string;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const selectedParticipante = options.find(o => o.id === value);
-
-  const filteredOptions = useMemo(() => {
-    if (!searchTerm.trim()) return options;
-    const term = searchTerm.toLowerCase();
-    return options.filter(opt => 
-      opt.nombres.toLowerCase().includes(term) || 
-      opt.apellidos.toLowerCase().includes(term) ||
-      opt.numeroDocumento.includes(term)
-    );
-  }, [options, searchTerm]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-        setSearchTerm('');
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleSelect = (participante: Participante) => {
-    onChange(participante.id);
-    setIsOpen(false);
-    setSearchTerm('');
-    setHighlightedIndex(-1);
-  };
-
-  return (
-    <div ref={containerRef} className="relative">
-      <div className={`relative flex items-center border rounded-xl transition-all ${
-        isOpen ? 'border-[#F7941D] ring-2 ring-[#F7941D]/20' : 'border-gray-200'
-      }`}>
-        <Users className="absolute left-3 w-4 h-4 text-gray-400" />
-        <input
-          type="text"
-          value={isOpen ? searchTerm : (selectedParticipante ? `${selectedParticipante.nombres} ${selectedParticipante.apellidos}` : '')}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setIsOpen(true);
-          }}
-          onFocus={() => {
-            setIsOpen(true);
-            setSearchTerm('');
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'ArrowDown') {
-              e.preventDefault();
-              setHighlightedIndex(prev => Math.min(prev + 1, filteredOptions.length - 1));
-            } else if (e.key === 'ArrowUp') {
-              e.preventDefault();
-              setHighlightedIndex(prev => Math.max(prev - 1, -1));
-            } else if (e.key === 'Enter' && highlightedIndex >= 0) {
-              e.preventDefault();
-              handleSelect(filteredOptions[highlightedIndex]);
-            } else if (e.key === 'Escape') {
-              setIsOpen(false);
-              setSearchTerm('');
-            }
-          }}
-          placeholder={placeholder}
-          className="w-full pl-9 pr-3 py-2.5 bg-transparent rounded-xl text-sm outline-none"
-        />
-        {selectedParticipante && !isOpen && (
-          <div className="absolute right-3 px-1.5 py-0.5 bg-green-50 rounded text-[10px] font-medium text-green-600">
-            ✓
-          </div>
-        )}
-      </div>
-
-      {isOpen && filteredOptions.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-56 overflow-y-auto">
-          {filteredOptions.map((opt, idx) => (
-            <button
-              key={opt.id}
-              type="button"
-              onClick={() => handleSelect(opt)}
-              className={`w-full text-left px-3 py-2 text-sm transition-colors ${
-                idx === highlightedIndex ? 'bg-orange-50 text-[#F7941D]' : 'hover:bg-gray-50'
-              } ${value === opt.id ? 'bg-orange-50/50 font-medium text-[#F7941D]' : 'text-gray-700'}`}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="font-medium">{opt.nombres} {opt.apellidos}</span>
-                  <div className="text-xs text-gray-400">{opt.tipoDocumento}: {opt.numeroDocumento}</div>
-                </div>
-                {value === opt.id && <CheckCircle className="w-3.5 h-3.5 text-[#F7941D]" />}
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// COMPONENTE COMBOBOX PARA GRUPOS
-function GrupoCombobox({ options, value, onChange, placeholder = "Buscar grupo..." }: { 
-  options: GrupoProgramas[]; 
-  value: number; 
-  onChange: (id: number) => void; 
-  placeholder?: string;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const selectedGrupo = options.find(o => o.id === value);
-
-  const filteredOptions = useMemo(() => {
-    if (!searchTerm.trim()) return options;
-    const term = searchTerm.toLowerCase();
-    return options.filter(opt => 
-      opt.nombreGrupo.toLowerCase().includes(term) || 
-      opt.programa?.nombre.toLowerCase().includes(term)
-    );
-  }, [options, searchTerm]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-        setSearchTerm('');
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleSelect = (grupo: GrupoProgramas) => {
-    onChange(grupo.id);
-    setIsOpen(false);
-    setSearchTerm('');
-    setHighlightedIndex(-1);
-  };
-
-  return (
-    <div ref={containerRef} className="relative">
-      <div className={`relative flex items-center border rounded-xl transition-all ${
-        isOpen ? 'border-[#F7941D] ring-2 ring-[#F7941D]/20' : 'border-gray-200'
-      }`}>
-        <Layers className="absolute left-3 w-4 h-4 text-gray-400" />
-        <input
-          type="text"
-          value={isOpen ? searchTerm : (selectedGrupo ? `${selectedGrupo.programa?.nombre} - ${selectedGrupo.nombreGrupo}` : '')}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setIsOpen(true);
-          }}
-          onFocus={() => {
-            setIsOpen(true);
-            setSearchTerm('');
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'ArrowDown') {
-              e.preventDefault();
-              setHighlightedIndex(prev => Math.min(prev + 1, filteredOptions.length - 1));
-            } else if (e.key === 'ArrowUp') {
-              e.preventDefault();
-              setHighlightedIndex(prev => Math.max(prev - 1, -1));
-            } else if (e.key === 'Enter' && highlightedIndex >= 0) {
-              e.preventDefault();
-              handleSelect(filteredOptions[highlightedIndex]);
-            } else if (e.key === 'Escape') {
-              setIsOpen(false);
-              setSearchTerm('');
-            }
-          }}
-          placeholder={placeholder}
-          className="w-full pl-9 pr-3 py-2.5 bg-transparent rounded-xl text-sm outline-none"
-        />
-        {selectedGrupo && !isOpen && (
-          <div className="absolute right-3 px-1.5 py-0.5 bg-green-50 rounded text-[10px] font-medium text-green-600">
-            ✓
-          </div>
-        )}
-      </div>
-
-      {isOpen && filteredOptions.length > 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-56 overflow-y-auto">
-          {filteredOptions.map((opt, idx) => (
-            <button
-              key={opt.id}
-              type="button"
-              onClick={() => handleSelect(opt)}
-              className={`w-full text-left px-3 py-2 text-sm transition-colors ${
-                idx === highlightedIndex ? 'bg-orange-50 text-[#F7941D]' : 'hover:bg-gray-50'
-              } ${value === opt.id ? 'bg-orange-50/50 font-medium text-[#F7941D]' : 'text-gray-700'}`}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="font-medium">{opt.programa?.nombre}</span>
-                  <div className="text-xs text-gray-400">{opt.nombreGrupo} - {opt.modalidad}</div>
-                </div>
-                {value === opt.id && <CheckCircle className="w-3.5 h-3.5 text-[#F7941D]" />}
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function InscripcionesPage() {
   const navigate = useNavigate();
@@ -481,31 +263,39 @@ export default function InscripcionesPage() {
       >
         <form onSubmit={guardar} className="space-y-5">
           
-          {/* Participante con combobox */}
+          {/* Participante */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
               <Users size={16} className="text-[#F7941D]" />
               Participante *
             </label>
-            <ParticipanteCombobox
-              options={participantes}
+            <Combobox
+              options={participantes.map(p => ({
+                id: p.id,
+                label: `${p.nombres} ${p.apellidos}`,
+                sublabel: `${p.tipoDocumento}: ${p.numeroDocumento}`,
+              }))}
               value={form.participanteId}
-              onChange={(id) => setForm({ ...form, participanteId: id })}
+              onChange={id => setForm({ ...form, participanteId: id })}
               placeholder="Buscar participante por nombre o documento..."
             />
             {errors.participanteId && <p className="text-xs text-red-500 mt-1">{errors.participanteId}</p>}
           </div>
 
-          {/* Grupo con combobox */}
+          {/* Grupo */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
               <Layers size={16} className="text-[#F7941D]" />
               Grupo *
             </label>
-            <GrupoCombobox
-              options={grupos}
+            <Combobox
+              options={grupos.map(g => ({
+                id: g.id,
+                label: `${g.programa?.nombre || ''} — ${g.nombreGrupo}`,
+                sublabel: g.modalidad,
+              }))}
               value={form.grupoId}
-              onChange={(id) => setForm({ ...form, grupoId: id })}
+              onChange={id => setForm({ ...form, grupoId: id })}
               placeholder="Buscar grupo por programa o nombre..."
             />
             {errors.grupoId && <p className="text-xs text-red-500 mt-1">{errors.grupoId}</p>}

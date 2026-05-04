@@ -42,11 +42,13 @@ export interface UpdateCertificadoDto {
 export interface GenerarCertificadoDto {
   inscripcionId: number;
   programaId: number;
+  estadoId?: number;
 }
 
 export interface GenerarCertificadosMasivosDto {
   inscripcionesIds: number[];
   programaId: number;
+  estadoId?: number;
 }
 
 export interface ResultadoGeneracionMasiva {
@@ -68,6 +70,17 @@ const getAuthHeaders = () => {
 };
 
 export const CertificadosService = {
+  async findEstados(): Promise<EstadoCertificado[]> {
+    const res = await fetch(`${API_URL}/estado-certificado`, {
+      headers: getAuthHeaders(),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.message || 'Error al obtener estados de certificado');
+    }
+    return res.json();
+  },
+
   async findAll(params?: {
     estadoId?: number;
     participanteId?: number;
@@ -160,8 +173,9 @@ export const CertificadosService = {
     });
 
     if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.message || 'Error al anular certificado');
+      const body = await res.json().catch(() => ({}));
+      const msg = Array.isArray(body.message) ? body.message.join(', ') : body.message;
+      throw new Error(msg || 'Error al anular certificado');
     }
 
     return res.json();
@@ -174,8 +188,9 @@ export const CertificadosService = {
     });
 
     if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.message || `Error al eliminar certificado ${id}`);
+      const body = await res.json().catch(() => ({}));
+      const msg = Array.isArray(body.message) ? body.message.join(', ') : body.message;
+      throw new Error(msg || `Error al eliminar certificado (${res.status})`);
     }
   },
 

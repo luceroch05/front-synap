@@ -5,11 +5,5 @@ export default function NotasGrupoPage() {
   const { id } = useParams();
   const grupoId = Number(id);
 
-  return (
-    <div className="page-root">
-      <div className="page-body">
-        <RegistroNotasGrupales grupoId={grupoId} />
-      </div>
-    </div>
-  );
+  return <RegistroNotasGrupales grupoId={grupoId} />;
 }

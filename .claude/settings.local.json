@@ -33,7 +33,10 @@
       "Bash(npm run *)",
       "Bash(lsof -ti:3001)",
       "Bash(xargs ls *)",
-      "Bash(npx puppeteer *)"
+      "Bash(npx puppeteer *)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d[:2], indent=2\\)\\)\")",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 *)"
     ],
     "deny": [],
     "ask": []

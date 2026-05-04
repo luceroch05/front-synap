@@ -5,11 +5,5 @@ export default function UnidadesProgramaPage() {
   const { id } = useParams();
   const programaId = Number(id);
 
-  return (
-    <div className="page-root">
-      <div className="page-body">
-        <GestionUnidades programaId={programaId} />
-      </div>
-    </div>
-  );
+  return <GestionUnidades programaId={programaId} />;
 }
