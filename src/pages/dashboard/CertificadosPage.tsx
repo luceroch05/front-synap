@@ -104,8 +104,8 @@ export default function CertificadosPage() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4">
-          <div className="table-card p-5" style={{ borderTop: '3px solid #F7941D' }}>
-            <div className="text-2xl font-bold text-[#F7941D]">{totalEmitidos}</div>
+          <div className="table-card p-5" style={{ borderTop: '3px solid #E8B84B' }}>
+            <div className="text-2xl font-bold text-[#E8B84B]">{totalEmitidos}</div>
             <div className="text-sm text-gray-500 mt-1">Emitidos</div>
           </div>
           <div className="table-card p-5" style={{ borderTop: '3px solid #7C3AED' }}>
@@ -162,7 +162,7 @@ export default function CertificadosPage() {
                             <span className="font-mono text-sm font-medium text-gray-900">{cert.codigoUnico}</span>
                             <button
                               onClick={() => copiarCodigo(cert)}
-                              className="p-1 text-gray-400 hover:text-[#F7941D] transition-colors"
+                              className="p-1 text-gray-400 hover:text-[#E8B84B] transition-colors"
                               title="Copiar código"
                             >
                               {copiedId === cert.id
@@ -192,7 +192,7 @@ export default function CertificadosPage() {
                               <>
                                 <button
                                   onClick={() => setModalVisor(cert)}
-                                  className="flex items-center gap-1 px-2.5 py-1 text-xs text-gray-500 hover:text-[#F7941D] hover:bg-orange-50 rounded-lg font-medium transition-colors"
+                                  className="flex items-center gap-1 px-2.5 py-1 text-xs text-gray-500 hover:text-[#E8B84B] hover:bg-orange-50 rounded-lg font-medium transition-colors"
                                 >
                                   <Eye size={13} /> Ver
                                 </button>
@@ -246,7 +246,7 @@ export default function CertificadosPage() {
             <div className="flex gap-3">
               <a
                 href={pdfUrl(modalVisor)!} target="_blank" rel="noopener noreferrer"
-                className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all text-center text-sm"
+                className="flex-1 bg-[#E8B84B] hover:bg-[#D4A017] text-white font-semibold py-2.5 px-4 rounded-xl transition-all text-center text-sm"
               >
                 Abrir en nueva pestaña / Descargar
               </a>

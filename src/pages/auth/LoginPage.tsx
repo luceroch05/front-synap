@@ -52,9 +52,18 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-2" style={{ color: '#F7941D' }}>
-              SYNAP
-            </h1>
+            <img
+              src="/convenio-1770145665324-723494311.png"
+              alt="SYNAP"
+              style={{ height: 130, objectFit: 'contain', margin: '0 auto 12px' }}
+              onError={e => {
+                const el = e.currentTarget as HTMLImageElement
+                el.style.display = 'none'
+                const fb = el.nextSibling as HTMLElement
+                if (fb) fb.style.display = 'block'
+              }}
+            />
+            <h1 className="text-4xl font-bold mb-2" style={{ color: '#E8B84B', display: 'none' }}>SYNAP</h1>
             <p className="text-gray-500 text-sm">Sistema de Certificados</p>
           </div>
 
@@ -101,7 +110,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full py-3 rounded-xl text-white font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-[0.99]"
-              style={{ backgroundColor: '#F7941D' }}
+              style={{ backgroundColor: '#E8B84B' }}
             >
               {loading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </button>

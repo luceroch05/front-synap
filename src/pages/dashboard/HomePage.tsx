@@ -17,14 +17,14 @@ interface Stat {
 }
 
 const STATS: Stat[] = [
-  { icon: BookOpen,  label: 'Programas Activos', key: 'programas',    value: 0, accentColor: '#F7941D', href: '/dashboard/programas'    },
+  { icon: BookOpen,  label: 'Programas Activos', key: 'programas',    value: 0, accentColor: '#E8B84B', href: '/dashboard/programas'    },
   { icon: Users,     label: 'Participantes',      key: 'participantes', value: 0, accentColor: '#1A3254', href: '/dashboard/participantes' },
   { icon: Award,     label: 'Certificados',       key: 'certificados',  value: 0, accentColor: '#0D9488', href: '/dashboard/certificados'  },
   { icon: FileText,  label: 'Inscripciones',      key: 'inscripciones', value: 0, accentColor: '#7C3AED', href: '/dashboard/inscripciones' },
 ];
 
 const ACTIONS = [
-  { icon: FolderKanban, label: 'Programas',     desc: 'Gestionar programas académicos',  href: '/dashboard/programas',    color: '#F7941D' },
+  { icon: FolderKanban, label: 'Programas',     desc: 'Gestionar programas académicos',  href: '/dashboard/programas',    color: '#E8B84B' },
   { icon: UserPlus,     label: 'Participantes', desc: 'Registrar nuevos participantes',   href: '/dashboard/participantes', color: '#1A3254' },
   { icon: BadgeCheck,   label: 'Certificados',  desc: 'Emitir y administrar certificados', href: '/dashboard/certificados', color: '#0D9488' },
 ];
@@ -71,7 +71,7 @@ export default function HomePage() {
       <div className="bg-white px-8 py-6" style={{ borderBottom: '1px solid #E5E7EB' }}>
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: '#F7941D' }}>
+            <p className="text-xs font-semibold tracking-widest uppercase mb-1" style={{ color: '#E8B84B' }}>
               {greeting}{usuario ? `, ${usuario.nombres}` : ''}
             </p>
             <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#0D1F35' }}>
@@ -82,7 +82,7 @@ export default function HomePage() {
 
           <div
             className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
-            style={{ backgroundColor: '#FEF3E2', color: '#F7941D' }}
+            style={{ backgroundColor: '#FEF3E2', color: '#E8B84B' }}
           >
             <TrendingUp size={15} />
             Sistema activo
@@ -200,7 +200,7 @@ export default function HomePage() {
                 className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
                 style={{ backgroundColor: '#FEF3E2' }}
               >
-                <Award size={22} style={{ color: '#F7941D' }} />
+                <Award size={22} style={{ color: '#E8B84B' }} />
               </div>
               <p className="text-sm font-semibold text-gray-700">Sin actividad reciente</p>
               <p className="text-xs text-gray-400 mt-1.5 max-w-xs leading-relaxed">
@@ -209,7 +209,7 @@ export default function HomePage() {
               <button
                 onClick={() => navigate('/dashboard/programas')}
                 className="mt-5 text-xs font-semibold px-5 py-2.5 rounded-xl transition-colors hover:opacity-90"
-                style={{ backgroundColor: '#FEF3E2', color: '#F7941D' }}
+                style={{ backgroundColor: '#FEF3E2', color: '#E8B84B' }}
               >
                 Ir a Programas →
               </button>

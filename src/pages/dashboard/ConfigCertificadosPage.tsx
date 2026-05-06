@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   Plus, Edit2, Trash2, Settings, ToggleLeft, ToggleRight, Image as ImageIcon, 
-  PenLine, Eye, CheckCircle, BookOpen, Upload, X, Shield, FileText, Users
+  PenLine, Eye, CheckCircle, BookOpen, Shield, FileText, Users
 } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import ImageUpload from '@/components/ui/ImageUpload';
@@ -57,7 +57,7 @@ function ProgramaCombobox({ options, value, onChange, placeholder = "Buscar prog
   return (
     <div ref={containerRef} className="relative">
       <div className={`relative flex items-center border rounded-xl transition-all ${
-        isOpen ? 'border-[#F7941D] ring-2 ring-[#F7941D]/20' : 'border-gray-200'
+        isOpen ? 'border-[#E8B84B] ring-2 ring-[#E8B84B]/20' : 'border-gray-200'
       }`}>
         <BookOpen className="absolute left-3 w-4 h-4 text-gray-400" />
         <input
@@ -105,15 +105,15 @@ function ProgramaCombobox({ options, value, onChange, placeholder = "Buscar prog
               type="button"
               onClick={() => handleSelect(opt)}
               className={`w-full text-left px-3 py-2 text-sm transition-colors ${
-                idx === highlightedIndex ? 'bg-orange-50 text-[#F7941D]' : 'hover:bg-gray-50'
-              } ${value === opt.id ? 'bg-orange-50/50 font-medium text-[#F7941D]' : 'text-gray-700'}`}
+                idx === highlightedIndex ? 'bg-orange-50 text-[#E8B84B]' : 'hover:bg-gray-50'
+              } ${value === opt.id ? 'bg-orange-50/50 font-medium text-[#E8B84B]' : 'text-gray-700'}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <BookOpen size={14} className={value === opt.id ? 'text-[#F7941D]' : 'text-gray-400'} />
+                  <BookOpen size={14} className={value === opt.id ? 'text-[#E8B84B]' : 'text-gray-400'} />
                   <span>{opt.nombre}</span>
                 </div>
-                {value === opt.id && <CheckCircle className="w-3.5 h-3.5 text-[#F7941D]" />}
+                {value === opt.id && <CheckCircle className="w-3.5 h-3.5 text-[#E8B84B]" />}
               </div>
             </button>
           ))}
@@ -154,7 +154,7 @@ function ItemSelector({ items, selectedIds, onChange, maxSelection = 3, type = '
   return (
     <div>
       <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-        {type === 'logo' ? <ImageIcon size={16} className="text-[#F7941D]" /> : <PenLine size={16} className="text-[#F7941D]" />}
+        {type === 'logo' ? <ImageIcon size={16} className="text-[#E8B84B]" /> : <PenLine size={16} className="text-[#E8B84B]" />}
         {type === 'logo' ? 'Logos' : 'Firmas'} (máx. {maxSelection})
       </label>
       <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border border-gray-200 rounded-xl p-3 bg-gray-50">
@@ -169,7 +169,7 @@ function ItemSelector({ items, selectedIds, onChange, maxSelection = 3, type = '
               disabled={isDisabled}
               className={`flex items-center gap-3 p-2 rounded-xl border-2 transition-all text-left ${
                 isSelected 
-                  ? 'border-[#F7941D] bg-orange-50 shadow-sm' 
+                  ? 'border-[#E8B84B] bg-orange-50 shadow-sm' 
                   : isDisabled 
                     ? 'border-gray-200 bg-gray-100 opacity-50 cursor-not-allowed' 
                     : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
@@ -183,11 +183,11 @@ function ItemSelector({ items, selectedIds, onChange, maxSelection = 3, type = '
                 )}
               </div>
               <div className="flex-1">
-                <p className={`text-xs font-medium truncate ${isSelected ? 'text-[#F7941D]' : 'text-gray-700'}`}>
+                <p className={`text-xs font-medium truncate ${isSelected ? 'text-[#E8B84B]' : 'text-gray-700'}`}>
                   {getItemName(item)}
                 </p>
               </div>
-              {isSelected && <CheckCircle size={14} className="text-[#F7941D] flex-shrink-0" />}
+              {isSelected && <CheckCircle size={14} className="text-[#E8B84B] flex-shrink-0" />}
             </button>
           );
         })}
@@ -463,7 +463,7 @@ export default function ConfigCertificadosPage() {
                                   <button onClick={() => toggleConfig(c.id)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                                     {c.activo ? <ToggleRight size={18} className="text-emerald-500" /> : <ToggleLeft size={18} className="text-gray-300" />}
                                   </button>
-                                  <button onClick={() => abrirEditarConfig(c)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors">
+                                  <button onClick={() => abrirEditarConfig(c)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#E8B84B] hover:bg-orange-50 transition-colors">
                                     <Edit2 size={15} />
                                   </button>
                                   <button onClick={() => eliminarConfig(c.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
@@ -513,7 +513,7 @@ export default function ConfigCertificadosPage() {
                             <button onClick={() => toggleLogo(logo.id)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                               {logo.activo ? <ToggleRight size={16} className="text-emerald-500" /> : <ToggleLeft size={16} className="text-gray-300" />}
                             </button>
-                            <button onClick={() => abrirEditarLogo(logo)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors">
+                            <button onClick={() => abrirEditarLogo(logo)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#E8B84B] hover:bg-orange-50 transition-colors">
                               <Edit2 size={14} />
                             </button>
                             <button onClick={() => eliminarLogo(logo.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
@@ -573,7 +573,7 @@ export default function ConfigCertificadosPage() {
                                   <button onClick={() => toggleFirma(firma.id)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                                     {firma.activo ? <ToggleRight size={18} className="text-emerald-500" /> : <ToggleLeft size={18} className="text-gray-300" />}
                                   </button>
-                                  <button onClick={() => abrirEditarFirma(firma)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors">
+                                  <button onClick={() => abrirEditarFirma(firma)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#E8B84B] hover:bg-orange-50 transition-colors">
                                     <Edit2 size={15} />
                                   </button>
                                   <button onClick={() => eliminarFirma(firma.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
@@ -601,7 +601,7 @@ export default function ConfigCertificadosPage() {
           {/* Programa con combobox */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <BookOpen size={16} className="text-[#F7941D]" />
+              <BookOpen size={16} className="text-[#E8B84B]" />
               Programa *
             </label>
             <ProgramaCombobox
@@ -616,7 +616,7 @@ export default function ConfigCertificadosPage() {
           {/* Plantilla */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <ImageIcon size={16} className="text-[#F7941D]" />
+              <ImageIcon size={16} className="text-[#E8B84B]" />
               Imagen de fondo de la plantilla *
             </label>
             <ImageUpload 
@@ -668,7 +668,7 @@ export default function ConfigCertificadosPage() {
               type="button"
               onClick={() => setConfigForm({ ...configForm, activo: !configForm.activo })}
               className="relative w-12 h-6 rounded-full transition-colors duration-200 flex-shrink-0 shadow-sm"
-              style={{ backgroundColor: configForm.activo ? '#F7941D' : '#D1D5DB' }}
+              style={{ backgroundColor: configForm.activo ? '#E8B84B' : '#D1D5DB' }}
             >
               <span
                 className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200"
@@ -683,7 +683,7 @@ export default function ConfigCertificadosPage() {
             <button
               type="submit"
               disabled={savingConfig}
-              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-[#E8B84B] hover:bg-[#D4A017] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {savingConfig ? (
                 <>
@@ -711,20 +711,20 @@ export default function ConfigCertificadosPage() {
         <form onSubmit={guardarLogo} className="space-y-5">
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <FileText size={16} className="text-[#F7941D]" />
+              <FileText size={16} className="text-[#E8B84B]" />
               Nombre (opcional)
             </label>
             <input
               value={logoForm.nombre || ''}
               onChange={e => setLogoForm({ ...logoForm, nombre: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D]"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B]"
               placeholder="Ej: Logo UNMSM"
             />
           </div>
 
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <ImageIcon size={16} className="text-[#F7941D]" />
+              <ImageIcon size={16} className="text-[#E8B84B]" />
               Imagen del Logo *
             </label>
             <ImageUpload 
@@ -750,7 +750,7 @@ export default function ConfigCertificadosPage() {
               type="button"
               onClick={() => setLogoForm({ ...logoForm, activo: !logoForm.activo })}
               className="relative w-12 h-6 rounded-full transition-colors duration-200 flex-shrink-0 shadow-sm"
-              style={{ backgroundColor: logoForm.activo ? '#F7941D' : '#D1D5DB' }}
+              style={{ backgroundColor: logoForm.activo ? '#E8B84B' : '#D1D5DB' }}
             >
               <span
                 className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200"
@@ -764,7 +764,7 @@ export default function ConfigCertificadosPage() {
             <button
               type="submit"
               disabled={savingLogo}
-              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-[#E8B84B] hover:bg-[#D4A017] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {savingLogo ? (
                 <>
@@ -791,13 +791,13 @@ export default function ConfigCertificadosPage() {
         <form onSubmit={guardarFirma} className="space-y-5">
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <Users size={16} className="text-[#F7941D]" />
+              <Users size={16} className="text-[#E8B84B]" />
               Nombre de la autoridad *
             </label>
             <input
               value={firmaForm.nombreAutoridad}
               onChange={e => setFirmaForm({ ...firmaForm, nombreAutoridad: e.target.value })}
-              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                 firmaErrors.nombreAutoridad ? 'border-red-300 bg-red-50' : 'border-gray-200'
               }`}
               placeholder="Ej: Dr. Juan Pérez García"
@@ -807,13 +807,13 @@ export default function ConfigCertificadosPage() {
 
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <Shield size={16} className="text-[#F7941D]" />
+              <Shield size={16} className="text-[#E8B84B]" />
               Cargo *
             </label>
             <input
               value={firmaForm.cargo}
               onChange={e => setFirmaForm({ ...firmaForm, cargo: e.target.value })}
-              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                 firmaErrors.cargo ? 'border-red-300 bg-red-50' : 'border-gray-200'
               }`}
               placeholder="Ej: Director de Posgrado"
@@ -823,7 +823,7 @@ export default function ConfigCertificadosPage() {
 
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <PenLine size={16} className="text-[#F7941D]" />
+              <PenLine size={16} className="text-[#E8B84B]" />
               Imagen de la firma *
             </label>
             <ImageUpload 
@@ -850,7 +850,7 @@ export default function ConfigCertificadosPage() {
               type="button"
               onClick={() => setFirmaForm({ ...firmaForm, activo: !firmaForm.activo })}
               className="relative w-12 h-6 rounded-full transition-colors duration-200 flex-shrink-0 shadow-sm"
-              style={{ backgroundColor: firmaForm.activo ? '#F7941D' : '#D1D5DB' }}
+              style={{ backgroundColor: firmaForm.activo ? '#E8B84B' : '#D1D5DB' }}
             >
               <span
                 className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200"
@@ -864,7 +864,7 @@ export default function ConfigCertificadosPage() {
             <button
               type="submit"
               disabled={savingFirma}
-              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-[#E8B84B] hover:bg-[#D4A017] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {savingFirma ? (
                 <>

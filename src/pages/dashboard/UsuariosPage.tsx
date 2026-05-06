@@ -65,7 +65,7 @@ function RolCombobox({ options, value, onChange, placeholder = "Buscar rol..." }
   return (
     <div ref={containerRef} className="relative">
       <div className={`relative flex items-center border rounded-xl transition-all ${
-        isOpen ? 'border-[#F7941D] ring-2 ring-[#F7941D]/20' : 'border-gray-200'
+        isOpen ? 'border-[#E8B84B] ring-2 ring-[#E8B84B]/20' : 'border-gray-200'
       }`}>
         <Shield className="absolute left-3 w-4 h-4 text-gray-400" />
         <input
@@ -115,17 +115,17 @@ function RolCombobox({ options, value, onChange, placeholder = "Buscar rol..." }
                 type="button"
                 onClick={() => handleSelect(opt)}
                 className={`w-full text-left px-3 py-2 text-sm transition-colors ${
-                  idx === highlightedIndex ? 'bg-orange-50 text-[#F7941D]' : 'hover:bg-gray-50'
-                } ${value === opt.id ? 'bg-orange-50/50 font-medium text-[#F7941D]' : 'text-gray-700'}`}
+                  idx === highlightedIndex ? 'bg-orange-50 text-[#E8B84B]' : 'hover:bg-gray-50'
+                } ${value === opt.id ? 'bg-orange-50/50 font-medium text-[#E8B84B]' : 'text-gray-700'}`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className={`${value === opt.id ? 'text-[#F7941D]' : 'text-gray-400'}`}>
+                    <span className={`${value === opt.id ? 'text-[#E8B84B]' : 'text-gray-400'}`}>
                       {Icon}
                     </span>
                     <span>{opt.nombre}</span>
                   </div>
-                  {value === opt.id && <CheckCircle className="w-3.5 h-3.5 text-[#F7941D]" />}
+                  {value === opt.id && <CheckCircle className="w-3.5 h-3.5 text-[#E8B84B]" />}
                 </div>
               </button>
             );
@@ -317,7 +317,7 @@ export default function UsuariosPage() {
                     <tr key={u.id} className="table-row">
                       <td className="table-cell">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-[#F7941D]">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-[#E8B84B]">
                             <span className="text-white text-xs font-semibold">
                               {u.nombres[0]}{u.apellidos[0]}
                             </span>
@@ -350,7 +350,7 @@ export default function UsuariosPage() {
                               : <ToggleLeft size={18} className="text-gray-300" />
                             }
                           </button>
-                          <button onClick={() => abrirEditar(u)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors">
+                          <button onClick={() => abrirEditar(u)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#E8B84B] hover:bg-orange-50 transition-colors">
                             <Edit2 size={15} />
                           </button>
                           <button onClick={() => eliminar(u.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
@@ -380,13 +380,13 @@ export default function UsuariosPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-                <User size={16} className="text-[#F7941D]" />
+                <User size={16} className="text-[#E8B84B]" />
                 Nombres *
               </label>
               <input
                 value={form.nombres}
                 onChange={e => setForm({ ...form, nombres: e.target.value })}
-                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                   errors.nombres ? 'border-red-300 bg-red-50' : 'border-gray-200'
                 }`}
                 placeholder="Juan Carlos"
@@ -396,13 +396,13 @@ export default function UsuariosPage() {
             </div>
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-                <User size={16} className="text-[#F7941D]" />
+                <User size={16} className="text-[#E8B84B]" />
                 Apellidos *
               </label>
               <input
                 value={form.apellidos}
                 onChange={e => setForm({ ...form, apellidos: e.target.value })}
-                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                   errors.apellidos ? 'border-red-300 bg-red-50' : 'border-gray-200'
                 }`}
                 placeholder="García López"
@@ -416,13 +416,13 @@ export default function UsuariosPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-                <User size={16} className="text-[#F7941D]" />
+                <User size={16} className="text-[#E8B84B]" />
                 Nombre de usuario *
               </label>
               <input
                 value={form.usuario}
                 onChange={e => setForm({ ...form, usuario: e.target.value })}
-                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                   errors.usuario ? 'border-red-300 bg-red-50' : 'border-gray-200'
                 }`}
                 placeholder="juan.garcia"
@@ -432,14 +432,14 @@ export default function UsuariosPage() {
             </div>
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-                <Mail size={16} className="text-[#F7941D]" />
+                <Mail size={16} className="text-[#E8B84B]" />
                 Correo electrónico *
               </label>
               <input
                 type="email"
                 value={form.correo}
                 onChange={e => setForm({ ...form, correo: e.target.value })}
-                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                   errors.correo ? 'border-red-300 bg-red-50' : 'border-gray-200'
                 }`}
                 placeholder="juan@ejemplo.com"
@@ -452,14 +452,14 @@ export default function UsuariosPage() {
           {/* Contraseña */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <Lock size={16} className="text-[#F7941D]" />
+              <Lock size={16} className="text-[#E8B84B]" />
               {editingId ? 'Nueva Contraseña (dejar vacío para no cambiar)' : 'Contraseña *'}
             </label>
             <input
               type="password"
               value={form.contrasena}
               onChange={e => setForm({ ...form, contrasena: e.target.value })}
-              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                 errors.contrasena ? 'border-red-300 bg-red-50' : 'border-gray-200'
               }`}
               placeholder="••••••••"
@@ -474,7 +474,7 @@ export default function UsuariosPage() {
           {/* Rol con combobox */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <Shield size={16} className="text-[#F7941D]" />
+              <Shield size={16} className="text-[#E8B84B]" />
               Rol *
             </label>
             <RolCombobox
@@ -495,7 +495,7 @@ export default function UsuariosPage() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
-                  <User size={10} className="text-[#F7941D]" />
+                  <User size={10} className="text-[#E8B84B]" />
                   {form.nombres} {form.apellidos}
                 </span>
                 <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
@@ -503,13 +503,13 @@ export default function UsuariosPage() {
                 </span>
                 {form.correo && (
                   <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
-                    <Mail size={10} className="text-[#F7941D]" />
+                    <Mail size={10} className="text-[#E8B84B]" />
                     {form.correo}
                   </span>
                 )}
                 {form.rolId !== 0 && (
                   <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
-                    <Shield size={10} className="text-[#F7941D]" />
+                    <Shield size={10} className="text-[#E8B84B]" />
                     {roles.find(r => r.id === form.rolId)?.nombre}
                   </span>
                 )}
@@ -522,7 +522,7 @@ export default function UsuariosPage() {
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-[#E8B84B] hover:bg-[#D4A017] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {saving ? (
                 <>

@@ -26,7 +26,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
           <Bell size={18} className="text-gray-400" />
           <span
             className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full"
-            style={{ backgroundColor: '#F7941D' }}
+            style={{ backgroundColor: '#E8B84B' }}
           />
         </button>
       </div>

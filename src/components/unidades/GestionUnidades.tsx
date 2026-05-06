@@ -111,7 +111,7 @@ export default function GestionUnidades({ programaId }: GestionUnidadesProps) {
     return (
       <div className="p-8 text-center">
         <p className="text-red-500 mb-4">Programa no encontrado</p>
-        <button onClick={() => navigate('/dashboard/programas')} className="text-[#F7941D] hover:underline text-sm">
+        <button onClick={() => navigate('/dashboard/programas')} className="text-[#E8B84B] hover:underline text-sm">
           Volver a programas
         </button>
       </div>
@@ -203,7 +203,7 @@ export default function GestionUnidades({ programaId }: GestionUnidadesProps) {
               {pesoTotal > 0 && (
                 <div className="mt-2 h-1.5 rounded-full bg-gray-100 overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all ${pesoTotal === 100 ? 'bg-green-500' : 'bg-[#F7941D]'}`}
+                    className={`h-full rounded-full transition-all ${pesoTotal === 100 ? 'bg-green-500' : 'bg-[#E8B84B]'}`}
                     style={{ width: `${Math.min(pesoTotal, 100)}%` }}
                   />
                 </div>
@@ -211,7 +211,7 @@ export default function GestionUnidades({ programaId }: GestionUnidadesProps) {
             </div>
             <div className={`table-card p-4 ${pesoRestante === 0 ? '' : 'border-orange-200 bg-orange-50'}`}>
               <p className="text-xs text-gray-400 uppercase font-semibold mb-1">Peso restante</p>
-              <p className={`text-2xl font-bold ${pesoRestante === 0 ? 'text-gray-400' : 'text-[#F7941D]'}`}>
+              <p className={`text-2xl font-bold ${pesoRestante === 0 ? 'text-gray-400' : 'text-[#E8B84B]'}`}>
                 {pesoRestante}%
               </p>
             </div>
@@ -241,7 +241,7 @@ export default function GestionUnidades({ programaId }: GestionUnidadesProps) {
                     {unidades.map(u => (
                       <tr key={u.id} className="table-row">
                         <td className="table-cell">
-                          <span className="w-7 h-7 flex items-center justify-center bg-orange-50 text-[#F7941D] rounded-lg text-xs font-bold">
+                          <span className="w-7 h-7 flex items-center justify-center bg-orange-50 text-[#E8B84B] rounded-lg text-xs font-bold">
                             {u.orden}
                           </span>
                         </td>
@@ -249,12 +249,12 @@ export default function GestionUnidades({ programaId }: GestionUnidadesProps) {
                         <td className="table-cell text-gray-500 text-sm max-w-xs truncate">{u.descripcion || '—'}</td>
                         <td className="table-cell">
                           <div className="flex items-center gap-2">
-                            <span className="px-2.5 py-1 bg-orange-50 text-[#F7941D] rounded-lg text-xs font-semibold">
+                            <span className="px-2.5 py-1 bg-orange-50 text-[#E8B84B] rounded-lg text-xs font-semibold">
                               {u.peso}%
                             </span>
                             <div className="w-16 h-1.5 rounded-full bg-gray-100 overflow-hidden">
                               <div
-                                className="h-full rounded-full bg-[#F7941D]"
+                                className="h-full rounded-full bg-[#E8B84B]"
                                 style={{ width: `${u.peso}%` }}
                               />
                             </div>
@@ -269,7 +269,7 @@ export default function GestionUnidades({ programaId }: GestionUnidadesProps) {
                           <div className="flex items-center justify-end gap-1">
                             <button
                               onClick={() => abrirEditar(u)}
-                              className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors"
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-[#E8B84B] hover:bg-orange-50 transition-colors"
                             >
                               <Edit2 size={15} />
                             </button>
@@ -296,13 +296,13 @@ export default function GestionUnidades({ programaId }: GestionUnidadesProps) {
         <form onSubmit={guardar} className="space-y-4">
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <Layers size={16} className="text-[#F7941D]" />
+              <Layers size={16} className="text-[#E8B84B]" />
               Nombre *
             </label>
             <input
               value={form.nombre}
               onChange={e => setForm({ ...form, nombre: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D]"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B]"
               placeholder="Ej: Unidad 1 - Introducción"
               required
             />
@@ -313,7 +313,7 @@ export default function GestionUnidades({ programaId }: GestionUnidadesProps) {
             <textarea
               value={form.descripcion}
               onChange={e => setForm({ ...form, descripcion: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] resize-none"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] resize-none"
               rows={2}
               placeholder="Descripción opcional..."
             />
@@ -326,7 +326,7 @@ export default function GestionUnidades({ programaId }: GestionUnidadesProps) {
                 type="number"
                 value={form.orden}
                 onChange={e => setForm({ ...form, orden: Number(e.target.value) })}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D]"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B]"
                 min={1}
                 required
               />
@@ -340,7 +340,7 @@ export default function GestionUnidades({ programaId }: GestionUnidadesProps) {
                 type="number"
                 value={form.peso}
                 onChange={e => setForm({ ...form, peso: Number(e.target.value) })}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D]"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B]"
                 min={0}
                 max={pesoMaxEdit}
                 step={0.01}
@@ -353,13 +353,13 @@ export default function GestionUnidades({ programaId }: GestionUnidadesProps) {
           <div className="p-3 bg-gray-50 rounded-xl">
             <div className="flex justify-between text-xs text-gray-500 mb-1.5">
               <span>Distribución de peso</span>
-              <span className={pesoTotal === 100 ? 'text-green-600 font-semibold' : 'text-[#F7941D] font-semibold'}>
+              <span className={pesoTotal === 100 ? 'text-green-600 font-semibold' : 'text-[#E8B84B] font-semibold'}>
                 {pesoTotal}% / 100%
               </span>
             </div>
             <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all ${pesoTotal >= 100 ? 'bg-green-500' : 'bg-[#F7941D]'}`}
+                className={`h-full rounded-full transition-all ${pesoTotal >= 100 ? 'bg-green-500' : 'bg-[#E8B84B]'}`}
                 style={{ width: `${Math.min(pesoTotal, 100)}%` }}
               />
             </div>
@@ -369,7 +369,7 @@ export default function GestionUnidades({ programaId }: GestionUnidadesProps) {
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-[#E8B84B] hover:bg-[#D4A017] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {saving ? (
                 <>

@@ -22,6 +22,7 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/validar-certificado" element={<ValidarCertificadoPage />} />
+      <Route path="/validar-certificado/:codigo" element={<ValidarCertificadoPage />} />
 
       <Route path="/dashboard" element={<DashboardLayout />}>
         <Route index element={<HomePage />} />

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { 
   Plus, Edit2, Trash2, Tag, CheckCircle, Clock, AlertCircle, 
-  Eye, Shield, Award, FileText, X
+  Eye, Award, FileText
 } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import { EstadosInscripcionService, EstadoInscripcion } from '@/lib/services/estados-inscripcion.service';
@@ -159,7 +159,7 @@ export default function EstadosInscripcionPage() {
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => abrirEditar(est)}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors"
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-[#E8B84B] hover:bg-orange-50 transition-colors"
                         title="Editar estado"
                       >
                         <Edit2 size={14} />
@@ -206,13 +206,13 @@ export default function EstadosInscripcionPage() {
           {/* Nombre del estado */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <Tag size={16} className="text-[#F7941D]" />
+              <Tag size={16} className="text-[#E8B84B]" />
               Nombre del estado *
             </label>
             <input
               value={form.nombre}
               onChange={e => setForm({ ...form, nombre: e.target.value })}
-              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                 errors.nombre ? 'border-red-300 bg-red-50' : 'border-gray-200'
               }`}
               placeholder="Ej: Aprobado, Retirado, Egresado..."
@@ -225,13 +225,13 @@ export default function EstadosInscripcionPage() {
           {/* Descripción */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <FileText size={16} className="text-[#F7941D]" />
+              <FileText size={16} className="text-[#E8B84B]" />
               Descripción
             </label>
             <textarea
               value={form.descripcion}
               onChange={e => setForm({ ...form, descripcion: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] resize-none"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] resize-none"
               rows={3}
               placeholder="Descripción opcional del estado..."
             />
@@ -260,7 +260,7 @@ export default function EstadosInscripcionPage() {
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-[#E8B84B] hover:bg-[#D4A017] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {saving ? (
                 <>

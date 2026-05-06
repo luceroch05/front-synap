@@ -83,7 +83,7 @@ export default function Sidebar({ usuario }: SidebarProps) {
           <div
             style={{
               width: 34, height: 34, borderRadius: 10, flexShrink: 0,
-              background: 'linear-gradient(135deg, #FFA733, #F7941D, #E07B15)',
+              background: 'linear-gradient(135deg, #E8B84B, #E8B84B, #D4A017)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
@@ -133,7 +133,7 @@ export default function Sidebar({ usuario }: SidebarProps) {
                 padding: '0 10px',
                 fontSize: 9, fontWeight: 700,
                 letterSpacing: '0.18em', textTransform: 'uppercase',
-                color: '#F7941D', opacity: 0.7, whiteSpace: 'nowrap',
+                color: '#E8B84B', opacity: 0.7, whiteSpace: 'nowrap',
               }}>
                 {section.label}
               </p>
@@ -168,7 +168,7 @@ export default function Sidebar({ usuario }: SidebarProps) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px' }}>
               <div style={{
                 width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
-                background: 'linear-gradient(135deg, #F7941D, #E07B15)',
+                background: 'linear-gradient(135deg, #E8B84B, #D4A017)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: '#fff', fontSize: 11, fontWeight: 700,
               }}>
@@ -235,14 +235,14 @@ function NavItem({
   const [hovered, setHovered] = useState(false);
 
   const bg = active
-    ? 'rgba(247,148,29,0.13)'
+    ? 'rgba(232,184,75,0.13)'
     : hovered
     ? (danger ? 'rgba(239,68,68,0.08)' : 'rgba(255,255,255,0.06)')
     : 'transparent';
 
   const color = danger
     ? (hovered ? '#F87171' : '#5A7A9F')
-    : active ? '#F7941D'
+    : active ? '#E8B84B'
     : (hovered ? '#fff' : '#7A9ABF');
 
   return (
@@ -269,7 +269,7 @@ function NavItem({
       {active && (
         <span style={{
           position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)',
-          width: 3, height: 20, borderRadius: '0 3px 3px 0', background: '#F7941D',
+          width: 3, height: 20, borderRadius: '0 3px 3px 0', background: '#E8B84B',
         }} />
       )}
 

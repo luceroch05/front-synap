@@ -239,7 +239,7 @@ export default function DetalleGrupoPage() {
             <div className="flex flex-col items-center justify-center py-16 gap-2">
               <Users size={40} className="text-gray-200" />
               <p className="text-sm text-gray-400">No hay participantes inscritos en este grupo</p>
-              <button onClick={() => setModalInsc(true)} className="mt-2 text-sm text-[#F7941D] hover:underline">
+              <button onClick={() => setModalInsc(true)} className="mt-2 text-sm text-[#E8B84B] hover:underline">
                 Inscribir el primero
               </button>
             </div>
@@ -275,7 +275,7 @@ export default function DetalleGrupoPage() {
                         <td className="table-cell">
                           {cambiando ? (
                             <div className="flex items-center gap-2">
-                              <span className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin border-[#F7941D]" />
+                              <span className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin border-[#E8B84B]" />
                               <span className="text-xs text-gray-400">Actualizando...</span>
                             </div>
                           ) : (
@@ -320,7 +320,7 @@ export default function DetalleGrupoPage() {
           {/* Participante - Combobox */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <User size={16} className="text-[#F7941D]" />
+              <User size={16} className="text-[#E8B84B]" />
               Participante *
             </label>
             <Combobox
@@ -343,7 +343,7 @@ export default function DetalleGrupoPage() {
           {/* Estado - Cards */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-              <ClipboardList size={16} className="text-[#F7941D]" />
+              <ClipboardList size={16} className="text-[#E8B84B]" />
               Estado inicial *
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -356,7 +356,7 @@ export default function DetalleGrupoPage() {
                     onClick={() => setFormInsc({ ...formInsc, estadoId: est.id })}
                     className={`py-2.5 px-3 rounded-xl border-2 text-sm font-medium transition-all flex items-center justify-center gap-2 ${
                       selected
-                        ? 'border-[#F7941D] bg-orange-50 text-[#F7941D] shadow-sm scale-[0.98]'
+                        ? 'border-[#E8B84B] bg-orange-50 text-[#E8B84B] shadow-sm scale-[0.98]'
                         : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
@@ -371,14 +371,14 @@ export default function DetalleGrupoPage() {
           {/* Fecha */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <Calendar size={16} className="text-[#F7941D]" />
+              <Calendar size={16} className="text-[#E8B84B]" />
               Fecha de inscripción *
             </label>
             <input
               type="date"
               value={formInsc.fechaInscripcion}
               onChange={e => setFormInsc({ ...formInsc, fechaInscripcion: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D]"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B]"
             />
           </div>
 
@@ -391,21 +391,21 @@ export default function DetalleGrupoPage() {
               </div>
               <div className="flex flex-wrap gap-2 text-xs">
                 <span className="px-2 py-1 bg-white rounded-lg shadow-sm flex items-center gap-1">
-                  <User size={10} className="text-[#F7941D]" />
+                  <User size={10} className="text-[#E8B84B]" />
                   {participanteSeleccionado
                     ? `${participanteSeleccionado.nombres} ${participanteSeleccionado.apellidos}`
                     : '—'}
                 </span>
                 <span className="px-2 py-1 bg-white rounded-lg shadow-sm flex items-center gap-1">
-                  <FileText size={10} className="text-[#F7941D]" />
+                  <FileText size={10} className="text-[#E8B84B]" />
                   {participanteSeleccionado?.tipoDocumento}: {participanteSeleccionado?.numeroDocumento}
                 </span>
                 <span className="px-2 py-1 bg-white rounded-lg shadow-sm flex items-center gap-1">
-                  <ClipboardList size={10} className="text-[#F7941D]" />
+                  <ClipboardList size={10} className="text-[#E8B84B]" />
                   {estadoSeleccionado?.nombre}
                 </span>
                 <span className="px-2 py-1 bg-white rounded-lg shadow-sm flex items-center gap-1">
-                  <Calendar size={10} className="text-[#F7941D]" />
+                  <Calendar size={10} className="text-[#E8B84B]" />
                   {fmtDate(formInsc.fechaInscripcion)}
                 </span>
               </div>
@@ -417,7 +417,7 @@ export default function DetalleGrupoPage() {
             <button
               type="submit"
               disabled={saving || !formInsc.participanteId}
-              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-[#E8B84B] hover:bg-[#D4A017] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {saving ? (
                 <>
@@ -470,7 +470,7 @@ export default function DetalleGrupoPage() {
             )}
             <button
               onClick={() => { setModalGenerar(false); if (resultadoGen.exitosos > 0) navigate('/dashboard/certificados'); }}
-              className="w-full bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all"
+              className="w-full bg-[#E8B84B] hover:bg-[#D4A017] text-white font-semibold py-2.5 px-4 rounded-xl transition-all"
             >
               {resultadoGen.exitosos > 0 ? 'Ver Certificados' : 'Cerrar'}
             </button>

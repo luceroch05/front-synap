@@ -203,26 +203,26 @@ export default function RegistroNotasGrupales({ grupoId }: RegistroNotasGrupales
                     onClick={() => { setUnidadSeleccionada(u.id); setNotas({}); }}
                     className={`text-left p-3 rounded-xl border-2 transition-all ${
                       selected
-                        ? 'border-[#F7941D] bg-orange-50 shadow-sm'
+                        ? 'border-[#E8B84B] bg-orange-50 shadow-sm'
                         : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1.5">
                       <span className={`w-6 h-6 flex items-center justify-center rounded-lg text-xs font-bold ${
-                        selected ? 'bg-[#F7941D] text-white' : 'bg-gray-100 text-gray-500'
+                        selected ? 'bg-[#E8B84B] text-white' : 'bg-gray-100 text-gray-500'
                       }`}>
                         {u.orden}
                       </span>
-                      <span className={`text-xs font-semibold ${selected ? 'text-[#F7941D]' : 'text-gray-400'}`}>
+                      <span className={`text-xs font-semibold ${selected ? 'text-[#E8B84B]' : 'text-gray-400'}`}>
                         {u.peso}%
                       </span>
                     </div>
-                    <p className={`text-xs font-medium leading-tight ${selected ? 'text-[#F7941D]' : 'text-gray-700'}`}>
+                    <p className={`text-xs font-medium leading-tight ${selected ? 'text-[#E8B84B]' : 'text-gray-700'}`}>
                       {u.nombre}
                     </p>
                     <div className="mt-2 h-1 rounded-full bg-gray-100 overflow-hidden">
                       <div
-                        className={`h-full rounded-full transition-all ${selected ? 'bg-[#F7941D]' : 'bg-gray-300'}`}
+                        className={`h-full rounded-full transition-all ${selected ? 'bg-[#E8B84B]' : 'bg-gray-300'}`}
                         style={{ width: `${u.peso}%` }}
                       />
                     </div>
@@ -299,7 +299,7 @@ export default function RegistroNotasGrupales({ grupoId }: RegistroNotasGrupales
                                 className={`w-24 px-3 py-1.5 border rounded-xl text-sm font-medium outline-none transition-all focus:ring-2 ${
                                   aprobado ? 'border-green-300 focus:ring-green-400/20 text-green-700 bg-green-50'
                                   : desaprobado ? 'border-red-300 focus:ring-red-400/20 text-red-700 bg-red-50'
-                                  : 'border-gray-200 focus:ring-[#F7941D]/20 focus:border-[#F7941D]'
+                                  : 'border-gray-200 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B]'
                                 }`}
                                 min="0" max="20" step="0.01" placeholder="—"
                               />
@@ -318,7 +318,7 @@ export default function RegistroNotasGrupales({ grupoId }: RegistroNotasGrupales
                                   observaciones: e.target.value,
                                 }
                               }))}
-                              className="w-full px-3 py-1.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D]"
+                              className="w-full px-3 py-1.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B]"
                               placeholder="Opcional..."
                             />
                           </td>
@@ -333,7 +333,7 @@ export default function RegistroNotasGrupales({ grupoId }: RegistroNotasGrupales
                 <button
                   type="submit"
                   disabled={guardando || autoAprobando}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-[#F7941D] hover:bg-[#E8850C] text-white rounded-xl font-semibold shadow-sm hover:shadow-md disabled:opacity-50 transition-all"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-[#E8B84B] hover:bg-[#D4A017] text-white rounded-xl font-semibold shadow-sm hover:shadow-md disabled:opacity-50 transition-all"
                 >
                   {guardando || autoAprobando ? (
                     <>

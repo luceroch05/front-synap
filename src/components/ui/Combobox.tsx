@@ -53,7 +53,7 @@ export default function Combobox({ options, value, onChange, placeholder = 'Busc
   return (
     <div ref={ref} className="relative">
       <div className={`relative flex items-center border rounded-xl transition-all ${
-        isOpen ? 'border-[#F7941D] ring-2 ring-[#F7941D]/20' : 'border-gray-200'
+        isOpen ? 'border-[#E8B84B] ring-2 ring-[#E8B84B]/20' : 'border-gray-200'
       }`}>
         <span className="absolute left-3 text-gray-400 flex items-center">
           {icon ?? <Search className="w-4 h-4" />}
@@ -96,8 +96,8 @@ export default function Combobox({ options, value, onChange, placeholder = 'Busc
               type="button"
               onClick={() => select(opt)}
               className={`w-full text-left px-3 py-2.5 text-sm transition-colors ${
-                idx === highlighted ? 'bg-orange-50 text-[#F7941D]' : 'hover:bg-gray-50'
-              } ${value === opt.id ? 'bg-orange-50/50 font-medium text-[#F7941D]' : 'text-gray-700'}`}
+                idx === highlighted ? 'bg-orange-50 text-[#E8B84B]' : 'hover:bg-gray-50'
+              } ${value === opt.id ? 'bg-orange-50/50 font-medium text-[#E8B84B]' : 'text-gray-700'}`}
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -106,7 +106,7 @@ export default function Combobox({ options, value, onChange, placeholder = 'Busc
                     <div className="text-xs text-gray-400">{opt.sublabel}</div>
                   )}
                 </div>
-                {value === opt.id && <CheckCircle className="w-3.5 h-3.5 text-[#F7941D] shrink-0" />}
+                {value === opt.id && <CheckCircle className="w-3.5 h-3.5 text-[#E8B84B] shrink-0" />}
               </div>
             </button>
           ))}

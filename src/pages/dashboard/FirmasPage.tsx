@@ -151,7 +151,7 @@ export default function FirmasPage() {
                               : <ToggleLeft size={18} className="text-gray-300" />
                             }
                           </button>
-                          <button onClick={() => abrirEditar(firma)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors">
+                          <button onClick={() => abrirEditar(firma)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#E8B84B] hover:bg-orange-50 transition-colors">
                             <Edit2 size={15} />
                           </button>
                           <button onClick={() => eliminar(firma.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">

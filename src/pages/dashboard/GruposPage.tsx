@@ -193,7 +193,7 @@ export default function GruposPage() {
                       </td>
                       <td className="table-cell">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => navigate(`/dashboard/grupos/${g.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors" title="Ver detalle">
+                          <button onClick={() => navigate(`/dashboard/grupos/${g.id}`)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#E8B84B] hover:bg-orange-50 transition-colors" title="Ver detalle">
                             <Eye size={15} />
                           </button>
                           <button onClick={() => toggleActivo(g.id)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
@@ -201,7 +201,7 @@ export default function GruposPage() {
                               ? <ToggleRight size={18} className="text-emerald-500" />
                               : <ToggleLeft size={18} className="text-gray-300" />}
                           </button>
-                          <button onClick={() => abrirEditar(g)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors">
+                          <button onClick={() => abrirEditar(g)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#E8B84B] hover:bg-orange-50 transition-colors">
                             <Edit2 size={15} />
                           </button>
                           <button onClick={() => eliminar(g.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
@@ -223,7 +223,7 @@ export default function GruposPage() {
 
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <Users size={16} className="text-[#F7941D]" />
+              <Users size={16} className="text-[#E8B84B]" />
               Programa *
             </label>
             <Combobox
@@ -237,13 +237,13 @@ export default function GruposPage() {
 
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <Users size={16} className="text-[#F7941D]" />
+              <Users size={16} className="text-[#E8B84B]" />
               Nombre del Grupo *
             </label>
             <input
               value={form.nombreGrupo}
               onChange={e => setForm({ ...form, nombreGrupo: e.target.value })}
-              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                 errors.nombreGrupo ? 'border-red-300 bg-red-50' : 'border-gray-200'
               }`}
               placeholder="Ej: Grupo A - Turno Noche"
@@ -254,7 +254,7 @@ export default function GruposPage() {
 
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-              <Briefcase size={16} className="text-[#F7941D]" />
+              <Briefcase size={16} className="text-[#E8B84B]" />
               Modalidad *
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -282,14 +282,14 @@ export default function GruposPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-1.5">
-                <Calendar size={14} className="text-[#F7941D]" />
+                <Calendar size={14} className="text-[#E8B84B]" />
                 Fecha Inicio *
               </label>
               <input
                 type="date"
                 value={form.fechaInicio}
                 onChange={e => setForm({ ...form, fechaInicio: e.target.value })}
-                className={`w-full px-3 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                className={`w-full px-3 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                   errors.fechaInicio ? 'border-red-300 bg-red-50' : 'border-gray-200'
                 }`}
               />
@@ -297,14 +297,14 @@ export default function GruposPage() {
             </div>
             <div>
               <label className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-1.5">
-                <Calendar size={14} className="text-[#F7941D]" />
+                <Calendar size={14} className="text-[#E8B84B]" />
                 Fecha Fin *
               </label>
               <input
                 type="date"
                 value={form.fechaFin}
                 onChange={e => setForm({ ...form, fechaFin: e.target.value })}
-                className={`w-full px-3 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                className={`w-full px-3 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                   errors.fechaFin ? 'border-red-300 bg-red-50' : 'border-gray-200'
                 }`}
               />
@@ -337,7 +337,7 @@ export default function GruposPage() {
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-[#E8B84B] hover:bg-[#D4A017] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {saving ? (
                 <>

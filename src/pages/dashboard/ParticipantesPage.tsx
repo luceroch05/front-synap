@@ -226,7 +226,7 @@ export default function ParticipantesPage() {
                               : <ToggleLeft size={18} className="text-gray-300" />
                             }
                           </button>
-                          <button onClick={() => abrirEditar(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors">
+                          <button onClick={() => abrirEditar(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#E8B84B] hover:bg-orange-50 transition-colors">
                             <Edit2 size={15} />
                           </button>
                           <button onClick={() => eliminar(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
@@ -255,7 +255,7 @@ export default function ParticipantesPage() {
           {/* Tipo de Documento - Cards seleccionables */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-              <CreditCard size={16} className="text-[#F7941D]" />
+              <CreditCard size={16} className="text-[#E8B84B]" />
               Tipo de documento *
             </label>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -269,18 +269,18 @@ export default function ParticipantesPage() {
                     onClick={() => setForm({ ...form, tipoDocumento: tipo.value })}
                     className={`flex flex-col items-center gap-2 rounded-xl p-3 border-2 transition-all duration-200 ${
                       selected 
-                        ? 'border-[#F7941D] bg-orange-50 shadow-sm scale-[0.98]' 
+                        ? 'border-[#E8B84B] bg-orange-50 shadow-sm scale-[0.98]' 
                         : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
                     <div
                       className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                        selected ? 'bg-[#F7941D] text-white shadow-md' : 'bg-gray-100 text-gray-400'
+                        selected ? 'bg-[#E8B84B] text-white shadow-md' : 'bg-gray-100 text-gray-400'
                       }`}
                     >
                       <Icon size={18} />
                     </div>
-                    <span className={`text-xs font-medium ${selected ? 'text-[#F7941D]' : 'text-gray-600'}`}>
+                    <span className={`text-xs font-medium ${selected ? 'text-[#E8B84B]' : 'text-gray-600'}`}>
                       {tipo.label}
                     </span>
                   </button>
@@ -293,13 +293,13 @@ export default function ParticipantesPage() {
           {/* Número de Documento */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <FileText size={16} className="text-[#F7941D]" />
+              <FileText size={16} className="text-[#E8B84B]" />
               Número de documento *
             </label>
             <input
               value={form.numeroDocumento}
               onChange={e => setForm({ ...form, numeroDocumento: e.target.value })}
-              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                 errors.numeroDocumento ? 'border-red-300 bg-red-50' : 'border-gray-200'
               }`}
               placeholder={form.tipoDocumento === 'RUC' ? '20123456789' : '12345678'}
@@ -312,13 +312,13 @@ export default function ParticipantesPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-                <User size={16} className="text-[#F7941D]" />
+                <User size={16} className="text-[#E8B84B]" />
                 Nombres *
               </label>
               <input
                 value={form.nombres}
                 onChange={e => setForm({ ...form, nombres: e.target.value })}
-                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                   errors.nombres ? 'border-red-300 bg-red-50' : 'border-gray-200'
                 }`}
                 placeholder="Juan Carlos"
@@ -328,13 +328,13 @@ export default function ParticipantesPage() {
             </div>
             <div>
               <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-                <User size={16} className="text-[#F7941D]" />
+                <User size={16} className="text-[#E8B84B]" />
                 Apellidos *
               </label>
               <input
                 value={form.apellidos}
                 onChange={e => setForm({ ...form, apellidos: e.target.value })}
-                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+                className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                   errors.apellidos ? 'border-red-300 bg-red-50' : 'border-gray-200'
                 }`}
                 placeholder="García López"
@@ -347,14 +347,14 @@ export default function ParticipantesPage() {
           {/* Correo Electrónico */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <Mail size={16} className="text-[#F7941D]" />
+              <Mail size={16} className="text-[#E8B84B]" />
               Correo electrónico
             </label>
             <input
               type="email"
               value={form.email}
               onChange={e => setForm({ ...form, email: e.target.value })}
-              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                 errors.email ? 'border-red-300 bg-red-50' : 'border-gray-200'
               }`}
               placeholder="correo@ejemplo.com"
@@ -366,13 +366,13 @@ export default function ParticipantesPage() {
           {/* Teléfono */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <Phone size={16} className="text-[#F7941D]" />
+              <Phone size={16} className="text-[#E8B84B]" />
               Teléfono
             </label>
             <input
               value={form.telefono}
               onChange={e => setForm({ ...form, telefono: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D]"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B]"
               placeholder="987654321"
               autoComplete="off"
             />
@@ -387,22 +387,22 @@ export default function ParticipantesPage() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
-                  <CreditCard size={10} className="text-[#F7941D]" />
+                  <CreditCard size={10} className="text-[#E8B84B]" />
                   {form.tipoDocumento}
                 </span>
                 <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
-                  <FileText size={10} className="text-[#F7941D]" />
+                  <FileText size={10} className="text-[#E8B84B]" />
                   {form.numeroDocumento || 'N° documento'}
                 </span>
                 {(form.nombres || form.apellidos) && (
                   <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
-                    <User size={10} className="text-[#F7941D]" />
+                    <User size={10} className="text-[#E8B84B]" />
                     {form.nombres} {form.apellidos}
                   </span>
                 )}
                 {form.email && (
                   <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
-                    <Mail size={10} className="text-[#F7941D]" />
+                    <Mail size={10} className="text-[#E8B84B]" />
                     {form.email}
                   </span>
                 )}
@@ -424,7 +424,7 @@ export default function ParticipantesPage() {
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-[#E8B84B] hover:bg-[#D4A017] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {saving ? (
                 <>

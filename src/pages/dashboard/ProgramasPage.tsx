@@ -43,18 +43,18 @@ function TipoProgramaSelector({ tipos, value, onChange }: {
             onClick={() => onChange(t.id)}
             className={`flex flex-col items-center gap-2 rounded-xl p-3 border-2 transition-all duration-200 ${
               selected 
-                ? 'border-[#F7941D] bg-orange-50 shadow-sm scale-[0.98]' 
+                ? 'border-[#E8B84B] bg-orange-50 shadow-sm scale-[0.98]' 
                 : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
             }`}
           >
             <div
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                selected ? 'bg-[#F7941D] text-white shadow-md' : 'bg-gray-100 text-gray-400'
+                selected ? 'bg-[#E8B84B] text-white shadow-md' : 'bg-gray-100 text-gray-400'
               }`}
             >
               {getIcon(t.nombre)}
             </div>
-            <span className={`text-xs font-medium ${selected ? 'text-[#F7941D]' : 'text-gray-600'}`}>
+            <span className={`text-xs font-medium ${selected ? 'text-[#E8B84B]' : 'text-gray-600'}`}>
               {t.nombre}
             </span>
           </button>
@@ -72,12 +72,12 @@ function HorasSlider({ value, onChange }: { value: number; onChange: (value: num
     <div>
       <div className="flex items-center justify-between mb-2">
         <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-          <Clock size={16} className="text-[#F7941D]" />
+          <Clock size={16} className="text-[#E8B84B]" />
           Horas académicas *
         </label>
         <div className="flex items-center gap-1 bg-orange-50 px-3 py-1 rounded-full">
-          <Hash size={12} className="text-[#F7941D]" />
-          <span className="text-base font-bold text-[#F7941D]">{value}</span>
+          <Hash size={12} className="text-[#E8B84B]" />
+          <span className="text-base font-bold text-[#E8B84B]">{value}</span>
           <span className="text-xs text-gray-500">horas</span>
         </div>
       </div>
@@ -90,8 +90,8 @@ function HorasSlider({ value, onChange }: { value: number; onChange: (value: num
         onChange={e => onChange(Number(e.target.value))}
         className="w-full h-2 rounded-full appearance-none cursor-pointer"
         style={{
-          accentColor: '#F7941D',
-          background: `linear-gradient(to right, #F7941D ${percentage}%, #FED7AA ${percentage}%)`,
+          accentColor: '#E8B84B',
+          background: `linear-gradient(to right, #E8B84B ${percentage}%, #FED7AA ${percentage}%)`,
         }}
       />
       <div className="flex justify-between mt-2">
@@ -108,14 +108,14 @@ function NotaStepper({ value, onChange }: { value: number; onChange: (value: num
     <div className="mt-4 pt-4 border-t-2 border-orange-100">
       <div className="flex items-center justify-between">
         <p className="flex items-center gap-2 text-sm font-medium text-gray-700">
-          <Award size={16} className="text-[#F7941D]" />
+          <Award size={16} className="text-[#E8B84B]" />
           Nota mínima aprobatoria
         </p>
         <div className="flex items-center gap-3 bg-white rounded-full p-1 shadow-sm">
           <button
             type="button"
             onClick={() => onChange(Math.max(0, value - 0.5))}
-            className="w-8 h-8 rounded-full bg-orange-50 hover:bg-orange-100 flex items-center justify-center text-[#F7941D] transition-all"
+            className="w-8 h-8 rounded-full bg-orange-50 hover:bg-orange-100 flex items-center justify-center text-[#E8B84B] transition-all"
           >
             <Minus size={14} />
           </button>
@@ -125,7 +125,7 @@ function NotaStepper({ value, onChange }: { value: number; onChange: (value: num
           <button
             type="button"
             onClick={() => onChange(Math.min(20, value + 0.5))}
-            className="w-8 h-8 rounded-full bg-orange-50 hover:bg-orange-100 flex items-center justify-center text-[#F7941D] transition-all"
+            className="w-8 h-8 rounded-full bg-orange-50 hover:bg-orange-100 flex items-center justify-center text-[#E8B84B] transition-all"
           >
             <Plus size={14} />
           </button>
@@ -133,7 +133,7 @@ function NotaStepper({ value, onChange }: { value: number; onChange: (value: num
       </div>
       <div className="mt-3 h-2 rounded-full bg-orange-100 overflow-hidden">
         <div
-          className="h-full rounded-full bg-[#F7941D] transition-all duration-300"
+          className="h-full rounded-full bg-[#E8B84B] transition-all duration-300"
           style={{ width: `${(value / 20) * 100}%` }}
         />
       </div>
@@ -161,13 +161,13 @@ function EvaluacionToggle({
   return (
     <div
       className={`rounded-xl border-2 p-4 transition-all duration-200 ${
-        tieneEvaluacion ? 'bg-orange-50 border-[#F7941D] shadow-sm' : 'bg-gray-50 border-gray-200'
+        tieneEvaluacion ? 'bg-orange-50 border-[#E8B84B] shadow-sm' : 'bg-gray-50 border-gray-200'
       }`}
     >
       <div className="flex items-center justify-between">
         <div>
           <p className="flex items-center gap-2 text-sm font-semibold text-gray-800">
-            <FileText size={16} className="text-[#F7941D]" />
+            <FileText size={16} className="text-[#E8B84B]" />
             Tiene evaluación
           </p>
           <p className="text-xs text-gray-400 mt-0.5 ml-7">Habilita el registro de notas por unidades</p>
@@ -176,7 +176,7 @@ function EvaluacionToggle({
           type="button"
           onClick={() => onChange(!tieneEvaluacion)}  // Cambiado a onChange
           className="relative w-12 h-6 rounded-full transition-colors duration-200 flex-shrink-0 shadow-sm"
-          style={{ backgroundColor: tieneEvaluacion ? '#F7941D' : '#D1D5DB' }}
+          style={{ backgroundColor: tieneEvaluacion ? '#E8B84B' : '#D1D5DB' }}
         >
           <span
             className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200"
@@ -358,7 +358,7 @@ const validateForm = () => {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => navigate(`/dashboard/programas/${p.id}/unidades`)}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors"
+                            className="p-1.5 rounded-lg text-gray-400 hover:text-[#E8B84B] hover:bg-orange-50 transition-colors"
                             title="Gestionar Unidades"
                           >
                             <Layers size={15} />
@@ -369,7 +369,7 @@ const validateForm = () => {
                               : <ToggleLeft size={18} className="text-gray-300" />
                             }
                           </button>
-                          <button onClick={() => abrirEditar(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#F7941D] hover:bg-orange-50 transition-colors">
+                          <button onClick={() => abrirEditar(p)} className="p-1.5 rounded-lg text-gray-400 hover:text-[#E8B84B] hover:bg-orange-50 transition-colors">
                             <Edit2 size={15} />
                           </button>
                           <button onClick={() => eliminar(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
@@ -398,7 +398,7 @@ const validateForm = () => {
           {/* Selector visual de tipo */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-              <Layers size={16} className="text-[#F7941D]" />
+              <Layers size={16} className="text-[#E8B84B]" />
               Tipo de programa *
             </label>
             <TipoProgramaSelector 
@@ -412,13 +412,13 @@ const validateForm = () => {
           {/* Nombre */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <BookOpen size={16} className="text-[#F7941D]" />
+              <BookOpen size={16} className="text-[#E8B84B]" />
               Nombre del programa *
             </label>
             <input
               value={form.nombre}
               onChange={e => setForm({ ...form, nombre: e.target.value })}
-              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] ${
+              className={`w-full px-4 py-2.5 border rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] ${
                 errors.nombre ? 'border-red-300 bg-red-50' : 'border-gray-200'
               }`}
               placeholder="Ej: Excel avanzado para negocios"
@@ -430,13 +430,13 @@ const validateForm = () => {
           {/* Descripción */}
           <div>
             <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-1.5">
-              <FileText size={16} className="text-[#F7941D]" />
+              <FileText size={16} className="text-[#E8B84B]" />
               Descripción
             </label>
             <textarea
               value={form.descripcion}
               onChange={e => setForm({ ...form, descripcion: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#F7941D]/20 focus:border-[#F7941D] resize-none"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-[#E8B84B]/20 focus:border-[#E8B84B] resize-none"
               rows={2}
               placeholder="Descripción breve del programa..."
             />
@@ -472,16 +472,16 @@ const validateForm = () => {
                   {tipos.find(t => t.id === form.tipoProgramaId)?.nombre || 'Tipo'}
                 </span>
                 <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
-                  <BookOpen size={10} className="text-[#F7941D]" />
+                  <BookOpen size={10} className="text-[#E8B84B]" />
                   {form.nombre.length > 30 ? form.nombre.substring(0, 30) + '...' : form.nombre}
                 </span>
                 <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
-                  <Clock size={10} className="text-[#F7941D]" />
+                  <Clock size={10} className="text-[#E8B84B]" />
                   {form.horasAcademicas} horas
                 </span>
                 {form.tieneEvaluacion && (
                   <span className="px-2 py-1 bg-white rounded-lg shadow-sm text-xs flex items-center gap-1">
-                    <Award size={10} className="text-[#F7941D]" />
+                    <Award size={10} className="text-[#E8B84B]" />
                     Nota ≥ {form.notaMinimaAprobatoria}
                   </span>
                 )}
@@ -494,7 +494,7 @@ const validateForm = () => {
             <button
               type="submit"
               disabled={saving}
-              className="flex-1 bg-[#F7941D] hover:bg-[#E8850C] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-[#E8B84B] hover:bg-[#D4A017] text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {saving ? (
                 <>
