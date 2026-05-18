@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/auth/LoginPage'
 import ValidarCertificadoPage from './pages/ValidarCertificadoPage'
+import InscripcionPublicaPage from './pages/InscripcionPublicaPage'
 import DashboardLayout from './layouts/DashboardLayout'
 import HomePage from './pages/dashboard/HomePage'
 import ProgramasPage from './pages/dashboard/ProgramasPage'
@@ -23,6 +24,8 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/validar-certificado" element={<ValidarCertificadoPage />} />
       <Route path="/validar-certificado/:codigo" element={<ValidarCertificadoPage />} />
+      <Route path="/inscripcion"              element={<InscripcionPublicaPage />} />
+      <Route path="/inscripcion/:cursoSlug" element={<InscripcionPublicaPage />} />
 
       <Route path="/dashboard" element={<DashboardLayout />}>
         <Route index element={<HomePage />} />

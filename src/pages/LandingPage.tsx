@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
+import PublicNavbar from '../components/PublicNavbar'
 
 // ── Keyframes inyectados una sola vez ──
 const STYLES = `
@@ -139,16 +140,6 @@ const STYLES = `
 `
 
 // ── SVG Icons ──
-const IconMenu = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="18" x2="21" y2="18" />
-  </svg>
-)
-const IconX = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-)
 const IconArrowRight = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
     <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
@@ -236,33 +227,26 @@ function useReveal() {
   return { ref, visible }
 }
 
+// Inyección síncrona — evita FOUC en el logo del footer y otros elementos
+if (typeof document !== 'undefined') {
+  const _id = 'landing-styles'
+  if (!document.getElementById(_id)) {
+    const _tag = document.createElement('style')
+    _tag.id = _id
+    _tag.textContent = STYLES
+    document.head.appendChild(_tag)
+  }
+}
+
 // ── Componente ──
 export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
   const [activeTestimonial, setActiveTestimonial] = useState(0)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
 
   useEffect(() => {
     const timer = setInterval(() => setActiveTestimonial(p => (p + 1) % testimonials.length), 5000)
     return () => clearInterval(timer)
   }, [])
 
-  // Inject styles once
-  useEffect(() => {
-    const id = 'landing-styles'
-    if (!document.getElementById(id)) {
-      const tag = document.createElement('style')
-      tag.id = id
-      tag.textContent = STYLES
-      document.head.appendChild(tag)
-    }
-  }, [])
 
   const hero = useReveal()
   const howSection = useReveal()
@@ -273,88 +257,7 @@ export default function LandingPage() {
   return (
     <div style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", backgroundColor: '#FFFFFF', minHeight: '100vh', overflowX: 'hidden' }}>
 
-      {/* ── NAVBAR ── */}
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200,
-        padding: '0 2rem',
-        backgroundColor: scrolled ? 'rgba(255,255,255,0.95)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(14px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(14px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(232,237,242,0.8)' : 'none',
-        boxShadow: scrolled ? '0 2px 24px rgba(0,0,0,0.06)' : 'none',
-        transition: 'all 0.4s cubic-bezier(.4,0,.2,1)',
-      }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 76 }}>
-
-          {/* Logo */}
-          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-            <img
-              src="/convenio-1770145665324-723494311.png"
-              alt="SYNAP Logo"
-              className="logo-img"
-              onError={(e) => {
-                const el = e.currentTarget as HTMLImageElement
-                el.style.display = 'none'
-                const fallback = el.nextSibling as HTMLElement
-                if (fallback) fallback.style.display = 'flex'
-              }}
-            />
-            {/* Fallback text logo */}
-            <div style={{ display: 'none', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 38, height: 38, borderRadius: 10, background: 'linear-gradient(135deg, #1A2A3A, #2d4a63)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ color: '#E8B84B', fontWeight: 800, fontSize: 18 }}>S</span>
-              </div>
-              <span style={{ fontSize: 22, fontWeight: 700, color: '#1A2A3A', letterSpacing: -0.5 }}>SYNAP</span>
-            </div>
-          </Link>
-
-          {/* Desktop Links */}
-          <div className="nav-links-desktop" style={{ display: 'flex', gap: 36, alignItems: 'center' }}>
-            <a href="#programas" className="nav-link">Programas</a>
-            <a href="#como-funciona" className="nav-link">Cómo funciona</a>
-            <a href="#nosotros" className="nav-link">Nosotros</a>
-            <Link to="/validar-certificado" className="btn-ghost" style={{ padding: '8px 20px', fontSize: 13 }}>
-              Validar Certificado
-            </Link>
-            <Link to="/login" className="btn-primary" style={{ padding: '9px 24px', fontSize: 13 }}>
-              Ingresar <IconArrowRight />
-            </Link>
-          </div>
-
-          {/* Mobile toggle */}
-          <button
-            className="nav-mobile-btn"
-            onClick={() => setMenuOpen(!menuOpen)}
-            style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#1A2A3A' }}
-          >
-            {menuOpen ? <IconX /> : <IconMenu />}
-          </button>
-        </div>
-
-        {/* Mobile menu */}
-        <div style={{
-          maxHeight: menuOpen ? 320 : 0, overflow: 'hidden',
-          transition: 'max-height 0.4s cubic-bezier(.4,0,.2,1)',
-          backgroundColor: 'rgba(255,255,255,0.98)',
-          backdropFilter: 'blur(14px)',
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column', padding: '16px 0 24px', gap: 4 }}>
-            {['#programas|Programas', '#como-funciona|Cómo funciona', '#nosotros|Nosotros'].map(item => {
-              const [href, label] = item.split('|')
-              return (
-                <a key={href} href={href} onClick={() => setMenuOpen(false)}
-                  style={{ padding: '12px 24px', color: '#1A2A3A', textDecoration: 'none', fontSize: 15, fontWeight: 500 }}>
-                  {label}
-                </a>
-              )
-            })}
-            <div style={{ padding: '8px 24px', display: 'flex', flexDirection: 'column', gap: 10, marginTop: 8 }}>
-              <Link to="/validar-certificado" className="btn-ghost" style={{ textAlign: 'center', justifyContent: 'center' }}>Validar Certificado</Link>
-              <Link to="/login" className="btn-primary" style={{ textAlign: 'center', justifyContent: 'center' }}>Ingresar</Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <PublicNavbar />
 
       {/* ── HERO ── */}
       <section style={{
@@ -845,8 +748,8 @@ export default function LandingPage() {
               Únete a más de <strong style={{ color: '#1A2A3A' }}>1,200 profesionales</strong> que ya confían en SYNAP para su formación continua.
             </p>
             <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link to="/login" className="btn-primary" style={{ padding: '14px 36px' }}>
-                Comenzar ahora <IconArrowRight />
+              <Link to="/inscripcion" className="btn-primary" style={{ padding: '14px 36px' }}>
+                Inscribirme ahora <IconArrowRight />
               </Link>
               <Link to="/validar-certificado" className="btn-ghost" style={{ padding: '14px 30px' }}>
                 Validar certificado
@@ -870,6 +773,7 @@ export default function LandingPage() {
                 src="/convenio-1770145665324-723494311.png"
                 alt="SYNAP Logo"
                 className="logo-img-footer"
+                style={{ height: 36, objectFit: 'contain' }}
                 onError={(e) => {
                   const el = e.currentTarget as HTMLImageElement
                   el.style.display = 'none'

@@ -37,7 +37,12 @@
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d[:2], indent=2\\)\\)\")",
       "Bash(python3 -c ' *)",
       "Bash(python3 *)",
-      "Read(//private/tmp/**)"
+      "Read(//private/tmp/**)",
+      "Bash(Get-Content \"C:\\\\Users\\\\lucero\\\\Desktop\\\\front-synap\\\\package.json\")",
+      "Bash(Get-Content *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\lucero\\\\Desktop\\\\back-synap\" -File -Force | ForEach-Object { $_.Name })",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\lucero\\\\Desktop\\\\back-synap\\\\src\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\"C:\\\\Users\\\\lucero\\\\Desktop\\\\back-synap\\\\\", \"\"\\) })",
+      "Skill(grill-me)"
     ],
     "deny": [],
     "ask": []

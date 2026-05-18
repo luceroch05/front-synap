@@ -2,7 +2,7 @@
  * Configuración del API
  * La URL se obtiene de las variables de entorno
  */
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/backend_synap';
 
 /**
  * Función helper para hacer peticiones al backend
